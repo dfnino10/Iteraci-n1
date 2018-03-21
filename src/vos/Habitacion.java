@@ -29,12 +29,16 @@ public class Habitacion
 	@JsonProperty(value = "capacidad")
 	private int capacidad;
 	
-	public Habitacion(@JsonProperty(value = "id")long id, @JsonProperty(value = "categoria")CategoriaHabitacion categoria, @JsonProperty(value = "compartido")boolean compartido, @JsonProperty(value = "capacidad")int capacidad)
+	@JsonProperty(value = "espacio")
+	private Espacio espacio;
+	
+	public Habitacion(@JsonProperty(value = "id")long id, @JsonProperty(value = "categoria")CategoriaHabitacion categoria, @JsonProperty(value = "compartido")boolean compartido, @JsonProperty(value = "capacidad")int capacidad, @JsonProperty(value = "espacio") Espacio espacio)
 	{
 		this.id = id;
 		this.capacidad = capacidad;
 		this.categoria = categoria;
 		this.compartido = compartido;
+		this.espacio = espacio;
 	}
 
 	public long getId() 
@@ -75,5 +79,15 @@ public class Habitacion
 	public void setCapacidad(int capacidad) 
 	{
 		this.capacidad = capacidad;
+	}
+
+	public Espacio getEspacio() 
+	{
+		return espacio;
+	}
+
+	public void setEspacio(Espacio espacio) 
+	{
+		this.espacio = espacio;
 	}	
 }

@@ -134,8 +134,8 @@ public class DAOEspacio
 		double tamaño = Double.parseDouble(rs.getString("TAMAÑO"));
 		String ubicacion = rs.getString("UBICACION");
 		double precio = Double.parseDouble(rs.getString("PRECIO"));
-		Date fechaRetiro = Date.valueOf(rs.getString("FECHARETIRO"));
-
+		Date fechaRetiro = Date.valueOf(rs.getString("FECHARETIRO"));		
+		
 		return new Espacio(id, registro, capacidad, tamaño, ubicacion, precio, fechaRetiro);
 	}
 	

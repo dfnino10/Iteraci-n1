@@ -1,5 +1,7 @@
 package vos;
 
+import java.util.List;
+
 import org.codehaus.jackson.annotate.*;
 
 
@@ -26,6 +28,9 @@ public class Cliente
 	@JsonProperty(value="direccion")
 	private String direccion;
 	
+	@JsonProperty(value = "reservas")
+	private List<Reserva> reservas;
+	
 	public enum Vinculo
 	{
 		ESTUDIANTE,
@@ -43,7 +48,7 @@ public class Cliente
 	@JsonProperty(value="vinculo")
 	private Vinculo vinculo;
 	
-	public Cliente(@JsonProperty(value="id") long id, @JsonProperty(value="identificacion") long identificacion, @JsonProperty(value="nombre")String nombre, @JsonProperty(value="edad")int edad,@JsonProperty(value="direccion")String direccion, @JsonProperty(value="vinculo")Vinculo vinculo)	
+	public Cliente(@JsonProperty(value="id") long id, @JsonProperty(value="identificacion") long identificacion, @JsonProperty(value="nombre")String nombre, @JsonProperty(value="edad")int edad,@JsonProperty(value="direccion")String direccion, @JsonProperty(value="vinculo")Vinculo vinculo, @JsonProperty(value = "reservas") List<Reserva> reservas)	
 	{
 		this.id = id;
 		this.identificacion = identificacion;
@@ -51,6 +56,7 @@ public class Cliente
 		this.edad = edad;
 		this.direccion = direccion;
 		this.vinculo = vinculo;
+		this.reservas = reservas;
 	}
 
 	public long getId()
@@ -111,5 +117,15 @@ public class Cliente
 	public void setVinculo(Vinculo vinculo)
 	{
 		this.vinculo = vinculo;
+	}
+
+	public List<Reserva> getReservas() 
+	{
+		return reservas;
+	}
+
+	public void setReservas(List<Reserva> reservas) 
+	{
+		this.reservas = reservas;
 	}	
 }
