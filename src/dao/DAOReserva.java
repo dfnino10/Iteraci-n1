@@ -63,7 +63,8 @@ public class DAOReserva {
 		return reservas;
 	}
 
-	public void addReserva(Reserva reserva) throws SQLException, Exception {
+	public void addReserva(Reserva reserva) throws SQLException, Exception
+	{
 		String sql = "INSERT INTO RESERVAS VALUES (";
 		sql += "idCliente = " + reserva.getIdCliente() + ",";
 		sql += "idEspacio = " + reserva.getIdEspacio() + ",";
