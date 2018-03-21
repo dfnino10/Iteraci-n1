@@ -34,16 +34,34 @@ public class Operador
 	@JsonProperty(value = "registro")
 	private long registro;
 	
+	@JsonProperty(value = "documento")
+	private long documento;
+	
 	@JsonProperty(value = "espacios")
 	private List<Espacio> espacios;
 	
-	public Operador(@JsonProperty(value = "id") long id, @JsonProperty(value = "registro") long registro, @JsonProperty(value = "nombre") String nombre, @JsonProperty(value = "categoria") CategoriaOperador categoria, @JsonProperty(value = "espacios") List<Espacio> espacios)
+	public Operador(@JsonProperty(value = "id") long id, @JsonProperty(value = "registro") long registro, @JsonProperty(value = "nombre") String nombre, @JsonProperty(value = "categoria") CategoriaOperador categoria, @JsonProperty(value = "espacios") List<Espacio> espacios, @JsonProperty(value = "documento") long documento)
 	{
 		this.id = id;
 		this.nombre = nombre;
 		this.registro = registro;
 		this.categoria = categoria;
 		this.espacios = espacios;
+		this.documento=documento;
+	}
+
+	/**
+	 * @return the documento
+	 */
+	public long getDocumento() {
+		return documento;
+	}
+
+	/**
+	 * @param documento the documento to set
+	 */
+	public void setDocumento(long documento) {
+		this.documento = documento;
 	}
 
 	public long getId()

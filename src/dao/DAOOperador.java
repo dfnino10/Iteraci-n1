@@ -5,9 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
+import vos.Espacio;
 import vos.Operador;
-import vos.Cliente.Vinculo;
 import vos.Operador.CategoriaOperador;
 
 public class DAOOperador {
@@ -60,13 +61,20 @@ public class DAOOperador {
 			long id = Long.parseLong(rs.getString("ID"));
 			long documento = Long.parseLong(rs.getString("DOCUMENTO"));
 			String nombre = rs.getString("NOMBRE");
-			int registro = Integer.parseInt(rs.getString("REGISTRO"));	
+			long registro = Integer.parseInt(rs.getString("REGISTRO"));	
 			CategoriaOperador categoría= CategoriaOperador.valueOf(rs.getString("CATEGORÍA"));				
 			DAOEspacio daoEspacio = new DAOEspacio();
 			daoEspacio.setConn(conn);
 			
+			List<Integer> lista = daoEspacio.buscarEspaciosIdOperador(id);
 			
-			operadores.add(new Operador(id, registro, nombre, categoría, documento));
+			ArrayList<Espacio> listaEspacio= new ArrayList<>();
+			
+			for (Integer integer : lista) {
+				listaEspacio.add(daoEspacio.buscarEspacio(integer));
+			}
+			
+			operadores.add(new Operador(id, registro, nombre, categoría, listaEspacio, documento));
 		}
 		return operadores;
 	}	
@@ -129,8 +137,18 @@ public class DAOOperador {
 		String nombre = rs.getString("NOMBRE");
 		long registro = Long.parseLong(rs.getString("REGISTRO"));
 		CategoriaOperador categoria= CategoriaOperador.valueOf(rs.getString("CATEGORÍA"));
+		DAOEspacio daoEspacio = new DAOEspacio();
+		daoEspacio.setConn(conn);
+		
+		List<Integer> lista = daoEspacio.buscarEspaciosIdOperador(id);
+		
+		ArrayList<Espacio> listaEspacio= new ArrayList<>();
+		
+		for (Integer integer : lista) {
+			listaEspacio.add(daoEspacio.buscarEspacio(integer));
+		}
 
-		return new Operador(id, documento,nombre, registro, categoria);
+		return new Operador(id, registro, nombre, categoria, listaEspacio, documento);
 	}
 	
 	public Operador buscarOperadorIdEspacio(long id) throws SQLException, Exception 
