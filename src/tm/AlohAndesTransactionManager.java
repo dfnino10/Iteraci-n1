@@ -12,14 +12,12 @@ import java.util.Properties;
 import dao.DAOCliente;
 import dao.DAOEspacio;
 import dao.DAOOperador;
-import dao.DAOPreferencia;
 import dao.DAOReserva;
 import vos.Cliente;
 import vos.Cliente.Vinculo;
 import vos.Espacio;
 import vos.ListaClientes;
 import vos.Operador;
-import vos.Preferencia;
 import vos.Operador.CategoriaOperador;
 import vos.Reserva;
 

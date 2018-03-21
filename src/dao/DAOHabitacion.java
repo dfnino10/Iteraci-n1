@@ -46,7 +46,7 @@ public class DAOHabitacion
 		this.conn = con;
 	}	
 	
-	public ArrayList<Habitacion> darHabitacions() throws SQLException, Exception 
+	public ArrayList<Habitacion> darHabitaciones() throws SQLException, Exception 
 	{
 		ArrayList<Habitacion> habitacions = new ArrayList<Habitacion>();
 		
