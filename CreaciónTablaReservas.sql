@@ -1,0 +1,15 @@
+CREATE TABLE RESERVAS(
+idEspacio NUMBER(20,0),
+idCliente NUMBER(20,0),
+duración NUMBER(20,0),
+fechaInicio DATE
+);
+
+ALTER TABLE RESERVAS 
+ADD PRIMARY KEY (idEspacio, idCliente);
+
+ALTER TABLE RESERVAS 
+MODIFY fechaInicio NOT NULL;
+
+ALTER TABLE RESERVAS 
+MODIFY duración NOT NULL;
