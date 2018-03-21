@@ -1,6 +1,6 @@
 package vos;
 
-import java.sql.Date;
+import java.util.Date;
 
 import org.codehaus.jackson.annotate.*;
 
@@ -25,12 +25,16 @@ public class Reserva
 	@JsonProperty(value = "duracion")
 	private int duracion;
 	
-	public Reserva(@JsonProperty(value = "idCliente") long idCliente, @JsonProperty(value = "idEspacio") long idEspacio, @JsonProperty(value = "fechaInicio") Date fechaInicio, @JsonProperty(value = "duracion") int duracion)
+	@JsonProperty(value = "fechaReserva")
+	private Date fechaReserva;
+	
+	public Reserva(@JsonProperty(value = "idCliente") long idCliente, @JsonProperty(value = "idEspacio") long idEspacio, @JsonProperty(value = "fechaInicio") Date fechaInicio, @JsonProperty(value = "duracion") int duracion, @JsonProperty(value = "fechaReserva") Date fechaReserva)
 	{
 		this.idCliente = idCliente;
 		this.idEspacio = idEspacio;
 		this.fechaInicio = fechaInicio;
 		this.duracion = duracion;
+		this.fechaReserva = fechaReserva;
 	}
 	
 	public long getIdCliente() 
@@ -44,6 +48,15 @@ public class Reserva
 		this.idCliente = idCliente;
 	}
 
+	public Date getFechaReserva() 
+	{
+		return fechaReserva;
+	}
+
+	public void setFechaReserva(Date fechaReserva) 
+	{
+		this.fechaReserva = fechaReserva;
+	}
 
 	public long getIdEspacio()
 	{
@@ -75,4 +88,42 @@ public class Reserva
 	{
 		this.duracion = duracion;
 	}	
+	
+	public Date calcularFechaFin()
+	{
+		Date fechaFin = new Date();
+		int meses = 0;
+		if(duracion/30 > 0)
+		{
+			meses = (Integer)(duracion/30);
+		}
+		int dias = duracion - meses*30;
+		if(fechaInicio.getMonth() + meses > 12)
+		{
+			fechaFin.setYear(fechaInicio.getYear()+1);
+			fechaFin.setMonth(fechaInicio.getMonth()+meses-12);
+			fechaFin.setDate(dias);
+		}
+		
+		return fechaFin;		
+	}
+	
+	public Date calcularFechaConDiasDespues(int diasMas)
+	{
+		Date fechaCon = new Date();
+		int meses = 0;
+		if(diasMas/30 > 0)
+		{
+			meses = (Integer)(diasMas/30);
+		}
+		int dias = diasMas - meses*30;
+		if(fechaInicio.getMonth() + meses > 12)
+		{
+			fechaCon.setYear(fechaInicio.getYear()+1);
+			fechaCon.setMonth(fechaInicio.getMonth()+meses-12);
+			fechaCon.setDate(dias);
+		}
+		
+		return fechaCon;
+	}
 }

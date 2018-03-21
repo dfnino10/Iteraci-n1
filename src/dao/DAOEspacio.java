@@ -6,9 +6,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import vos.Cliente;
 import vos.Espacio;
+import vos.Habitacion;
 import vos.Cliente.Vinculo;
 
 public class DAOEspacio 
@@ -66,7 +68,20 @@ public class DAOEspacio
 			String ubicacion = rs.getString("UBICACION");
 			double precio = Double.parseDouble(rs.getString("PRECIO"));
 			Date fechaRetiro = Date.valueOf(rs.getString("FECHARETIRO"));
-			espacios.add(new Espacio(id, registro, capacidad, tamaño, ubicacion, precio, fechaRetiro));
+			
+			DAOHabitacion daoHabitacion = new DAOHabitacion();
+			daoHabitacion.setConn(conn);
+			
+			List<Long> habitacionesId = daoHabitacion.buscarHabitacionesIdEspacio(id);
+			
+			List<Habitacion> habitaciones = new ArrayList<Habitacion>();
+			
+			for(Long hId : habitacionesId)
+			{
+				habitaciones.add(daoHabitacion.buscarHabitacion(hId));
+			}
+			
+			espacios.add(new Espacio(id, registro, capacidad, tamaño, ubicacion, precio, fechaRetiro,,,habitaciones));
 		}
 		return espacios;
 	}	
