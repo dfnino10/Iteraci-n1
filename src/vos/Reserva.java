@@ -13,8 +13,11 @@ import org.codehaus.jackson.annotate.*;
 
 public class Reserva 
 {
-	@JsonProperty(value = "id")
-	private long id;
+	@JsonProperty(value = "idCliente")
+	private long idCliente;
+	
+	@JsonProperty(value = "idEspacio")
+	private long idEspacio;
 	
 	@JsonProperty(value = "fechaInicio")
 	private Date fechaInicio;
@@ -22,21 +25,35 @@ public class Reserva
 	@JsonProperty(value = "duracion")
 	private int duracion;
 	
-	public Reserva(@JsonProperty(value = "id") long id,@JsonProperty(value = "fechaInicio") Date fechaInicio, @JsonProperty(value = "duracion") int duracion)
+	public Reserva(@JsonProperty(value = "idCliente") long idCliente, @JsonProperty(value = "idEspacio") long idEspacio, @JsonProperty(value = "fechaInicio") Date fechaInicio, @JsonProperty(value = "duracion") int duracion)
 	{
-		this.id = id;
+		this.idCliente = idCliente;
+		this.idEspacio = idEspacio;
 		this.fechaInicio = fechaInicio;
 		this.duracion = duracion;
 	}
-
-	public long getId() 
+	
+	public long getIdCliente() 
 	{
-		return id;
+		return idCliente;
 	}
 
-	public void setId(long id)
+
+	public void setIdCliente(long idCliente)
 	{
-		this.id = id;
+		this.idCliente = idCliente;
+	}
+
+
+	public long getIdEspacio()
+	{
+		return idEspacio;
+	}
+
+
+	public void setIdEspacio(long idEspacio)
+	{
+		this.idEspacio = idEspacio;
 	}
 
 	public Date getFechaInicio() 

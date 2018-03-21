@@ -1,6 +1,8 @@
 package vos;
 
 import java.sql.Date;
+import java.util.List;
+
 import org.codehaus.jackson.annotate.*;
 
 
@@ -33,7 +35,19 @@ public class Espacio
 	@JsonProperty(value="fechaRetiro")
 	private Date fechaRetiro;
 	
-	public Espacio(@JsonProperty(value="id")long id,@JsonProperty(value="registro")long registro, @JsonProperty(value="capacidad")int capacidad, @JsonProperty(value="tamaño")double tamaño, @JsonProperty(value="ubicacion")String ubicacion, @JsonProperty(value="precio")double precio,@JsonProperty(value="fechaRetiro")Date fechaRetiro )
+	@JsonProperty(value="operador")
+	private Operador operador;
+	
+	@JsonProperty(value="reservas")
+	private List<Reserva> reservas;
+	
+	@JsonProperty(value="servicios")
+	private List<Servicio> servicios;
+	
+	@JsonProperty(value="habitaciones")
+	private List<Habitacion> habitaciones;
+	
+	public Espacio(@JsonProperty(value="id")long id,@JsonProperty(value="registro")long registro, @JsonProperty(value="capacidad")int capacidad, @JsonProperty(value="tamaño")double tamaño, @JsonProperty(value="ubicacion")String ubicacion, @JsonProperty(value="precio")double precio,@JsonProperty(value="fechaRetiro")Date fechaRetiro , @JsonProperty(value="operador") Operador operador, @JsonProperty(value="reservas") List<Reserva> reservas, @JsonProperty(value="servicios") List<Servicio> servicios, @JsonProperty(value="habitaciones") List<Habitacion> habitaciones)
 	{
 		this.id = id;
 		this.registro = registro;
@@ -42,6 +56,10 @@ public class Espacio
 		this.ubicacion = ubicacion;
 		this.precio = precio;
 		this.fechaRetiro = fechaRetiro;
+		this.operador = operador;
+		this.reservas = reservas;
+		this.servicios = servicios;
+		this.habitaciones = habitaciones;
 	}
 
 	public long getId()
@@ -112,5 +130,45 @@ public class Espacio
 	public void setFechaRetiro(Date fechaRetiro) 
 	{
 		this.fechaRetiro = fechaRetiro;
+	}
+
+	public Operador getOperador()
+	{
+		return operador;
+	}
+
+	public void setOperador(Operador operador)
+	{
+		this.operador = operador;
+	}
+
+	public List<Reserva> getReservas()
+	{
+		return reservas;
+	}
+
+	public void setReservas(List<Reserva> reservas)
+	{
+		this.reservas = reservas;
+	}
+
+	public List<Servicio> getServicios()
+	{
+		return servicios;
+	}
+
+	public void setServicios(List<Servicio> servicios) 
+	{
+		this.servicios = servicios;
+	}
+
+	public List<Habitacion> getHabitaciones() 
+	{
+		return habitaciones;
+	}
+
+	public void setHabitaciones(List<Habitacion> habitaciones)
+	{
+		this.habitaciones = habitaciones;
 	}	
 }

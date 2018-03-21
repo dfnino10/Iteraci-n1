@@ -1,5 +1,7 @@
 package vos;
 
+import java.util.List;
+
 import org.codehaus.jackson.annotate.*;
 
 /**
@@ -32,12 +34,16 @@ public class Operador
 	@JsonProperty(value = "registro")
 	private long registro;
 	
-	public Operador(@JsonProperty(value = "id") long id, @JsonProperty(value = "registro") long registro, @JsonProperty(value = "nombre") String nombre, @JsonProperty(value = "categoria") CategoriaOperador categoria)
+	@JsonProperty(value = "espacios")
+	private List<Espacio> espacios;
+	
+	public Operador(@JsonProperty(value = "id") long id, @JsonProperty(value = "registro") long registro, @JsonProperty(value = "nombre") String nombre, @JsonProperty(value = "categoria") CategoriaOperador categoria, @JsonProperty(value = "espacios") List<Espacio> espacios)
 	{
 		this.id = id;
 		this.nombre = nombre;
 		this.registro = registro;
 		this.categoria = categoria;
+		this.espacios = espacios;
 	}
 
 	public long getId()
@@ -78,5 +84,15 @@ public class Operador
 	public void setRegistro(long registro) 
 	{
 		this.registro = registro;
+	}
+
+	public List<Espacio> getEspacios() 
+	{
+		return espacios;
+	}
+
+	public void setEspacios(List<Espacio> espacios)
+	{
+		this.espacios = espacios;
 	}	
 }
