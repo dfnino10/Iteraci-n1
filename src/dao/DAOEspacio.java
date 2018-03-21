@@ -11,6 +11,8 @@ import java.util.List;
 import vos.Cliente;
 import vos.Espacio;
 import vos.Habitacion;
+import vos.Operador;
+import vos.Reserva;
 import vos.Cliente.Vinculo;
 
 public class DAOEspacio 
@@ -81,7 +83,17 @@ public class DAOEspacio
 				habitaciones.add(daoHabitacion.buscarHabitacion(hId));
 			}
 			
-			espacios.add(new Espacio(id, registro, capacidad, tamaño, ubicacion, precio, fechaRetiro,,,habitaciones));
+			DAOReserva daoReserva = new DAOReserva();
+			daoReserva.setConn(conn);
+			
+			List<Reserva> reservas = daoReserva.buscarReservasIdEspacio(id);
+			
+			DAOOperador daoOperador = new DAOOperador();
+			daoOperador.setConn(conn);
+			
+			Operador operador = daoOperador.buscarOperadorIdEspacio(id);
+			
+			espacios.add(new Espacio(id, registro, capacidad, tamaño, ubicacion, precio, fechaRetiro,operador,reservas,,habitaciones));
 		}
 		return espacios;
 	}	
