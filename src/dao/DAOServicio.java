@@ -12,7 +12,8 @@ import vos.Reserva;
 import vos.Servicio;
 import vos.Servicio.CategoriaServicio;
 
-public class DAOServicio {
+public class DAOServicio 
+{
 	private ArrayList<Object> recursos;
 
 	private Connection conn;

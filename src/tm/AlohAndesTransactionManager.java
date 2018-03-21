@@ -19,6 +19,7 @@ import vos.Espacio;
 import vos.ListaClientes;
 import vos.Operador;
 import vos.Operador.CategoriaOperador;
+import vos.RFC1;
 import vos.Reserva;
 
 public class AlohAndesTransactionManager 
@@ -169,7 +170,7 @@ public class AlohAndesTransactionManager
 	
 	//RF5
 	
-	public void deleteReserva(Reserva reserva) throws Exception 
+	public void cancelarReserva(Reserva reserva) throws Exception 
 	{
 		DAOReserva daoReserva = new DAOReserva();
 		DAOCliente daoCliente = new DAOCliente();
@@ -177,7 +178,7 @@ public class AlohAndesTransactionManager
 		
 		try 
 		{
-			//////TransacciÃ³n
+			//////Transacción
 			this.conn = darConexion();
 			daoReserva.setConn(conn);
 			daoCliente.setConn(conn);
@@ -197,30 +198,42 @@ public class AlohAndesTransactionManager
 				throw e;
 			}					
 			
+			if(reserva.isCancelado())
+			{
+				throw new Exception("La reserva ya está cancelada");
+			}
+			
 			Date fechaCancelacion = new Date();
 			
 			if(reserva.getDuracion() < 7 && fechaCancelacion.before(reserva.calcularFechaConDiasDespues(4)))
 			{
-				throw new Exception("Debe pagarse el 10% de la reserva: " + espacio.getPrecio()*0.1);
+				reserva.setCancelado(true);
+				espacio.setPrecio(espacio.getPrecio()*0.1);
+				throw new Exception("Se canceló la reserva, pero recuerde que debe pagarse el 10% de la reserva: " + espacio.getPrecio());
 			}
 			
 			if(reserva.getDuracion() < 7 && fechaCancelacion.after(reserva.calcularFechaConDiasDespues(3)))
 			{
-				throw new Exception("Debe pagarse el 30% de la reserva: " + espacio.getPrecio()*0.3);
+				reserva.setCancelado(true);
+				espacio.setPrecio(espacio.getPrecio()*0.3);
+				throw new Exception("Se canceló la reserva, pero recuerde que debe pagarse el 30% de la reserva: " + espacio.getPrecio());
 			}
 			
 			if(reserva.getDuracion() > 7 && fechaCancelacion.before(reserva.calcularFechaConDiasDespues(8)))
 			{
-				throw new Exception("Debe pagarse el 10% de la reserva: " + espacio.getPrecio()*0.1);
+				reserva.setCancelado(true);
+				espacio.setPrecio(espacio.getPrecio()*0.1);
+				throw new Exception("Se canceló la reserva, pero recuerde que debe pagarse el 10% de la reserva: " + espacio.getPrecio());
 			}
 			
 			if(reserva.getDuracion() > 7 && fechaCancelacion.after(reserva.calcularFechaConDiasDespues(7)))
 			{
-				throw new Exception("Debe pagarse el 30% de la reserva: " + espacio.getPrecio()*0.3);
+				reserva.setCancelado(true);
+				espacio.setPrecio(espacio.getPrecio()*0.3);
+				throw new Exception("Se canceló la reserva, pero recuerde que debe pagarse el 30% de la reserva: " + espacio.getPrecio());
 			}
 			
 			daoReserva.deleteReserva(reserva);
-
 		} 
 		catch (SQLException e) 
 		{
@@ -318,6 +331,100 @@ public class AlohAndesTransactionManager
 			try 
 			{
 				daoReserva.cerrarRecursos();
+				if(this.conn!=null)
+					this.conn.close();
+			} 
+			catch (SQLException exception) 
+			{
+				System.err.println("SQLException closing resources:" + exception.getMessage());
+				exception.printStackTrace();
+				throw exception;
+			}
+		}
+		
+		
+		
+		
+	}
+	
+	//RFC1
+	
+	public List<RFC1> ingresosOperadores() throws Exception
+	{
+		DAOOperador daoOperador = new DAOOperador();
+		
+		List<RFC1> resultado = new ArrayList<RFC1>();
+		try 
+		{		
+			this.conn = darConexion();				
+			daoOperador.setConn(conn);
+			
+			resultado = daoOperador.obtenerIngresosOperadores();
+			
+			return resultado;
+		} 
+		catch (SQLException e) 
+		{
+			System.err.println("SQLException:" + e.getMessage());
+			e.printStackTrace();
+			throw e;
+		} 
+		catch (Exception e) 
+		{
+			System.err.println("GeneralException:" + e.getMessage());
+			e.printStackTrace();
+			throw e;
+		} 
+		finally 
+		{
+			try 
+			{
+				daoOperador.cerrarRecursos();
+				if(this.conn!=null)
+					this.conn.close();
+			} 
+			catch (SQLException exception) 
+			{
+				System.err.println("SQLException closing resources:" + exception.getMessage());
+				exception.printStackTrace();
+				throw exception;
+			}
+		}
+	}
+	
+	//RFC2
+	
+	public List<Espacio> espaciosPopulares() throws Exception
+	{
+		DAOEspacio daoEspacio = new DAOEspacio();
+		
+		List<Espacio> resultado = new ArrayList<Espacio>();
+		try 
+		{		
+			this.conn = darConexion();				
+			daoEspacio.setConn(conn);
+			
+			resultado = daoEspacio.espaciosPopulares();
+			
+			return resultado;
+		} 
+		catch (SQLException e) 
+		{
+			System.err.println("SQLException:" + e.getMessage());
+			e.printStackTrace();
+			throw e;
+		} 
+		catch (Exception e) 
+		{
+			System.err.println("GeneralException:" + e.getMessage());
+			e.printStackTrace();
+			throw e;
+		} 
+		finally 
+		{
+			try 
+			{
+				daoEspacio.cerrarRecursos();
 				if(this.conn!=null)
 					this.conn.close();
 			} 

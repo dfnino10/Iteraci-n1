@@ -12,6 +12,7 @@ import vos.Cliente;
 import vos.Espacio;
 import vos.Habitacion;
 import vos.Operador;
+import vos.RFC1;
 import vos.Reserva;
 import vos.Servicio;
 import vos.Cliente.Vinculo;
@@ -249,5 +250,31 @@ public class DAOEspacio
 		int espacio = id;
 		
 		return espacio;
+	}
+	
+	//RFC2
+	
+	public List<Espacio> espaciosPopulares() throws Exception, SQLException
+	{
+		String sql = "SELECT ID FROM (SELECT RESERVAS.IDESPACIO AS ID, COUNT(RESERVAS.IDCLIENTE) AS CONTEO FROM RESERVAS GROUP BY RESERVAS.IDESPACIO ORDER BY CONTEO DESC) WHERE ROWNUM <= 20";
+		
+		System.out.println("SQL stmt:" + sql);
+
+		PreparedStatement prepStmt = conn.prepareStatement(sql);
+		recursos.add(prepStmt);
+		ResultSet rs = prepStmt.executeQuery();	
+		
+		System.out.println(rs.next());
+		
+		List<Espacio> espacios = new ArrayList<Espacio>();
+		
+		while(rs.next())
+		{
+			long id = Long.parseLong(rs.getString("ID"));
+			Espacio resultante = buscarEspacio(id);
+			espacios.add(resultante);
+		}
+		
+		return espacios;
 	}
 }
