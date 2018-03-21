@@ -16,62 +16,50 @@ import tm.AlohAndesTransactionManager;
 import vos.Espacio;
 import vos.ListaEspacios;
 
-
 @Path("espacios")
-public class EspacioService 
-{
+public class EspacioService {
 	@Context
 	private ServletContext context;
-	
-	private String getPath() 
-	{
+
+	private String getPath() {
 		return context.getRealPath("WEB-INF/ConnectionData");
 	}
-	
-	private String doErrorMessage(Exception e)
-	{
-		return "{ \"ERROR\": \""+ e.getMessage() + "\"}" ;
+
+	private String doErrorMessage(Exception e) {
+		return "{ \"ERROR\": \"" + e.getMessage() + "\"}";
 	}
-	
-	//RFC2
-	
+
+	// RFC2
+
 	@GET
 	@Path("/espaciospopulares")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getBoletas() 
-	{
+	public Response getBoletas() {
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
-		
-		try 
-		{
+
+		try {
 			ListaEspacios espacios = new ListaEspacios(tm.espaciosPopulares());
 			return Response.status(200).entity(espacios).build();
-		} 
-		catch (Exception e) 
-		{
+		} catch (Exception e) {
 			return Response.status(500).entity(doErrorMessage(e)).build();
-		}		
+		}
 	}
-	
-	//RF6
-	
+
+	// RF6
+
 	@DELETE
 	@Path("/espacio")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response deleteEspacio(Espacio espacio) 
-	{
+	public Response deleteEspacio(Espacio espacio) {
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
-		
-		try 
-		{
+
+		try {
 			Date fechaCancelacion = new Date();
 			tm.cancelarEspacio(espacio, fechaCancelacion);
 			return Response.status(200).entity(espacio).build();
-		} 
-		catch (Exception e) 
-		{
+		} catch (Exception e) {
 			return Response.status(500).entity(doErrorMessage(e)).build();
-		}		
-	}	
+		}
+	}
 }

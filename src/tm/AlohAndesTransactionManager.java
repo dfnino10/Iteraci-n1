@@ -16,17 +16,15 @@ import dao.DAOReserva;
 import vos.Cliente;
 import vos.Cliente.Vinculo;
 import vos.Espacio;
-import vos.ListaClientes;
 import vos.Operador;
 import vos.Operador.CategoriaOperador;
 import vos.RFC1;
 import vos.Reserva;
 
-public class AlohAndesTransactionManager 
-{
+public class AlohAndesTransactionManager {
 	private static final String CONNECTION_DATA_FILE_NAME_REMOTE = "/conexion.properties";
 
-	private  String connectionDataPath;
+	private String connectionDataPath;
 
 	private String user;
 
@@ -38,16 +36,13 @@ public class AlohAndesTransactionManager
 
 	private Connection conn;
 
-	public AlohAndesTransactionManager(String contextPathP) 
-	{
+	public AlohAndesTransactionManager(String contextPathP) {
 		connectionDataPath = contextPathP + CONNECTION_DATA_FILE_NAME_REMOTE;
 		initConnectionData();
 	}
-	
-	private void initConnectionData()
-	{
-		try 
-		{
+
+	private void initConnectionData() {
+		try {
 			File arch = new File(this.connectionDataPath);
 			Properties prop = new Properties();
 			FileInputStream in = new FileInputStream(arch);
@@ -58,374 +53,294 @@ public class AlohAndesTransactionManager
 			this.password = prop.getProperty("clave");
 			this.driver = prop.getProperty("driver");
 			Class.forName(driver);
-		} 
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	private Connection darConexion() throws SQLException 
-	{
+
+	private Connection darConexion() throws SQLException {
 		System.out.println("Connecting to: " + url + " With user: " + user);
 		return DriverManager.getConnection(url, user, password);
 	}
-	
-	//RF4
-	
-	public void addReserva(Reserva reserva) throws Exception
-	{
+
+	// RF4
+
+	public void addReserva(Reserva reserva) throws Exception {
 		DAOReserva daoReserva = new DAOReserva();
 		DAOCliente daoCliente = new DAOCliente();
 		DAOEspacio daoEspacio = new DAOEspacio();
-		
-		try 
-		{
-			//////Transacción
+
+		try {
+			////// Transacción
 			this.conn = darConexion();
 			daoReserva.setConn(conn);
 			daoCliente.setConn(conn);
 			daoEspacio.setConn(conn);
-			
+
 			Cliente cliente = null;
 			Espacio espacio = null;
-			try
-			{
-				cliente =daoCliente.buscarCliente(reserva.getIdCliente());
+			try {
+				cliente = daoCliente.buscarCliente(reserva.getIdCliente());
 				espacio = daoEspacio.buscarEspacio(reserva.getIdEspacio());
-			}
-			catch(Exception e)
-			{
+			} catch (Exception e) {
 				System.err.println(e.getMessage());
 				e.printStackTrace();
 				throw e;
-			}			
-			
+			}
+
 			Date fecha = new Date();
-			
-			if(fecha.after(reserva.getFechaInicio()))
-			{
+
+			if (fecha.after(reserva.getFechaInicio())) {
 				throw new Exception("La reserva debe iniciar después que la fecha actual");
 			}
-			
-			if(espacio.getOperador().getCategoria() == CategoriaOperador.MIEMBRO_DE_LA_COMUNIDAD || espacio.getOperador().getCategoria() == CategoriaOperador.PERSONA_NATURAL)
-			{
-				if(reserva.getDuracion() <= 30)
-				{
-					throw new Exception("La reserva tiene que durar mínimo 30 días si se quiere reservar un espacio de ese operador");
+
+			if (espacio.getOperador().getCategoria() == CategoriaOperador.MIEMBRO_DE_LA_COMUNIDAD
+					|| espacio.getOperador().getCategoria() == CategoriaOperador.PERSONA_NATURAL) {
+				if (reserva.getDuracion() <= 30) {
+					throw new Exception(
+							"La reserva tiene que durar mínimo 30 días si se quiere reservar un espacio de ese operador");
 				}
-			}			
-			
-			if(espacio.getCapacidad() < espacio.calcularOcupacionEnFecha(reserva.getFechaInicio()) + 1)
-			{
+			}
+
+			if (espacio.getCapacidad() < espacio.calcularOcupacionEnFecha(reserva.getFechaInicio()) + 1) {
 				throw new Exception("La nueva reserva excediría la capacidad del espacio a reservar");
 			}
-			
-			if(espacio.getOperador().getCategoria() == CategoriaOperador.VIVIENDA_UNIVERSITARIA && (cliente.getVinculo() != Vinculo.ESTUDIANTE || cliente.getVinculo() != Vinculo.PROFESOR || cliente.getVinculo() != Vinculo.EMPLEADO || cliente.getVinculo() != Vinculo.PROFESOR_INVITADO))
-			{
+
+			if (espacio.getOperador().getCategoria() == CategoriaOperador.VIVIENDA_UNIVERSITARIA
+					&& (cliente.getVinculo() != Vinculo.ESTUDIANTE || cliente.getVinculo() != Vinculo.PROFESOR
+							|| cliente.getVinculo() != Vinculo.EMPLEADO
+							|| cliente.getVinculo() != Vinculo.PROFESOR_INVITADO)) {
 				throw new Exception("Sólo estudiantes, profesores y empleados pueden usar vivienda universitaria");
 			}
-			
-			if(cliente.reservaHoy(reserva.getFechaReserva()))
-			{
+
+			if (cliente.reservaHoy(reserva.getFechaReserva())) {
 				throw new Exception("No puede hacerse más de una resrva al día");
 			}
-			
-			if( espacio.getFechaRetiro() != null && reserva.calcularFechaFin().after(espacio.getFechaRetiro()))	
-			{
-				throw new Exception("No se puede reservar con esta duración y fecha de inicio porque el espacio se retira antes de finalizar la reserva");
+
+			if (espacio.getFechaRetiro() != null && reserva.calcularFechaFin().after(espacio.getFechaRetiro())) {
+				throw new Exception(
+						"No se puede reservar con esta duración y fecha de inicio porque el espacio se retira antes de finalizar la reserva");
 			}
-			
+
 			daoReserva.addReserva(reserva);
 			conn.commit();
-		} 
-		catch (SQLException e) 
-		{
+		} catch (SQLException e) {
 			System.err.println("SQLException:" + e.getMessage());
 			e.printStackTrace();
 			throw e;
-		} 
-		catch (Exception e) 
-		{
+		} catch (Exception e) {
 			System.err.println("GeneralException:" + e.getMessage());
 			e.printStackTrace();
 			throw e;
-		} 
-		finally 
-		{
-			try 
-			{
+		} finally {
+			try {
 				daoCliente.cerrarRecursos();
-				if(this.conn!=null)
+				if (this.conn != null)
 					this.conn.close();
-			} 
-			catch (SQLException exception)
-			{
+			} catch (SQLException exception) {
 				System.err.println("SQLException closing resources:" + exception.getMessage());
 				exception.printStackTrace();
 				throw exception;
 			}
 		}
 	}
-	
-	//RF5
-	
-	public void cancelarReserva(Reserva reserva) throws Exception 
-	{
+
+	// RF5
+
+	public void cancelarReserva(Reserva reserva) throws Exception {
 		DAOReserva daoReserva = new DAOReserva();
 		DAOCliente daoCliente = new DAOCliente();
 		DAOEspacio daoEspacio = new DAOEspacio();
-		
-		try 
-		{
-			//////Transacción
+
+		try {
+			////// Transacción
 			this.conn = darConexion();
 			daoReserva.setConn(conn);
 			daoCliente.setConn(conn);
 			daoEspacio.setConn(conn);
-			
+
 			Cliente cliente = null;
 			Espacio espacio = null;
-			try
-			{
-				cliente =daoCliente.buscarCliente(reserva.getIdCliente());
+			try {
+				cliente = daoCliente.buscarCliente(reserva.getIdCliente());
 				espacio = daoEspacio.buscarEspacio(reserva.getIdEspacio());
-			}
-			catch(Exception e)
-			{
+			} catch (Exception e) {
 				System.err.println(e.getMessage());
 				e.printStackTrace();
 				throw e;
-			}					
-			
-			if(reserva.isCancelado())
-			{
+			}
+
+			if (reserva.isCancelado()) {
 				throw new Exception("La reserva ya está cancelada");
 			}
-			
+
 			Date fechaCancelacion = new Date();
-			
-			if(reserva.getDuracion() < 7 && fechaCancelacion.before(reserva.calcularFechaConDiasDespues(4)))
-			{
+
+			if (reserva.getDuracion() < 7 && fechaCancelacion.before(reserva.calcularFechaConDiasDespues(4))) {
 				reserva.setCancelado(true);
-				espacio.setPrecio(espacio.getPrecio()*0.1);
+				espacio.setPrecio(espacio.getPrecio() * 0.1);
 			}
-			
-			if(reserva.getDuracion() < 7 && fechaCancelacion.after(reserva.calcularFechaConDiasDespues(3)))
-			{
+
+			if (reserva.getDuracion() < 7 && fechaCancelacion.after(reserva.calcularFechaConDiasDespues(3))) {
 				reserva.setCancelado(true);
-				espacio.setPrecio(espacio.getPrecio()*0.3);
+				espacio.setPrecio(espacio.getPrecio() * 0.3);
 			}
-			
-			if(reserva.getDuracion() > 7 && fechaCancelacion.before(reserva.calcularFechaConDiasDespues(8)))
-			{
+
+			if (reserva.getDuracion() > 7 && fechaCancelacion.before(reserva.calcularFechaConDiasDespues(8))) {
 				reserva.setCancelado(true);
-				espacio.setPrecio(espacio.getPrecio()*0.1);
+				espacio.setPrecio(espacio.getPrecio() * 0.1);
 			}
-			
-			if(reserva.getDuracion() > 7 && fechaCancelacion.after(reserva.calcularFechaConDiasDespues(7)))
-			{
+
+			if (reserva.getDuracion() > 7 && fechaCancelacion.after(reserva.calcularFechaConDiasDespues(7))) {
 				reserva.setCancelado(true);
-				espacio.setPrecio(espacio.getPrecio()*0.3);
+				espacio.setPrecio(espacio.getPrecio() * 0.3);
 			}
-			
+
 			daoReserva.updateReserva(reserva);
-		} 
-		catch (SQLException e) 
-		{
+		} catch (SQLException e) {
 			System.err.println("SQLException:" + e.getMessage());
 			e.printStackTrace();
 			throw e;
-		} 
-		catch (Exception e) 
-		{
+		} catch (Exception e) {
 			System.err.println("GeneralException:" + e.getMessage());
 			e.printStackTrace();
 			throw e;
-		} 
-		finally 
-		{
-			try 
-			{
+		} finally {
+			try {
 				daoReserva.cerrarRecursos();
-				if(this.conn!=null)
+				if (this.conn != null)
 					this.conn.close();
-			} 
-			catch (SQLException exception) 
-			{
+			} catch (SQLException exception) {
 				System.err.println("SQLException closing resources:" + exception.getMessage());
 				exception.printStackTrace();
 				throw exception;
 			}
 		}
 	}
-	
-	//RF6
-	
-	public void cancelarEspacio(Espacio espacio, Date fechaCancelacion) throws Exception 
-	{
+
+	// RF6
+
+	public void cancelarEspacio(Espacio espacio, Date fechaCancelacion) throws Exception {
 		DAOReserva daoReserva = new DAOReserva();
 		DAOOperador daoOperador = new DAOOperador();
 		DAOEspacio daoEspacio = new DAOEspacio();
-		
-		try 
-		{
-			//////TransacciÃ³n
+
+		try {
+			////// TransacciÃ³n
 			this.conn = darConexion();
 			daoReserva.setConn(conn);
 			daoOperador.setConn(conn);
 			daoEspacio.setConn(conn);
-			
+
 			Operador operador = null;
 			List<Reserva> reservas = null;
-			
-			try
-			{
+
+			try {
 				espacio = daoEspacio.buscarEspacio(espacio.getId());
-			}
-			catch(Exception e)
-			{
+			} catch (Exception e) {
 				throw new Exception("No hay espacio con dicho id para poder cancelarlo.");
 			}
-			try
-			{
-				operador =daoOperador.buscarOperador(espacio.getOperador().getId());
+			try {
+				operador = daoOperador.buscarOperador(espacio.getOperador().getId());
 				reservas = daoEspacio.buscarEspacio(espacio.getId()).getReservas();
-			}
-			catch(Exception e)
-			{
+			} catch (Exception e) {
 				System.err.println(e.getMessage());
 				e.printStackTrace();
 				throw e;
-			}					
-			
-			for(Reserva r : reservas)
-			{
-				if(r.calcularFechaFin().after(fechaCancelacion))
-				{
-					throw new Exception ("Hay reservas hechas en el espacio que culminan después de la cancelación propuesta. Asegúrese que no se está comprometido.");
+			}
+
+			for (Reserva r : reservas) {
+				if (r.calcularFechaFin().after(fechaCancelacion)) {
+					throw new Exception(
+							"Hay reservas hechas en el espacio que culminan después de la cancelación propuesta. Asegúrese que no se está comprometido.");
 				}
-			}			
-			
+			}
+
 			espacio.setFechaRetiro(fechaCancelacion);
 			daoEspacio.updateEspacio(espacio);
-		} 
-		catch (SQLException e) 
-		{
+		} catch (SQLException e) {
 			System.err.println("SQLException:" + e.getMessage());
 			e.printStackTrace();
 			throw e;
-		} 
-		catch (Exception e) 
-		{
+		} catch (Exception e) {
 			System.err.println("GeneralException:" + e.getMessage());
 			e.printStackTrace();
 			throw e;
-		} 
-		finally 
-		{
-			try 
-			{
+		} finally {
+			try {
 				daoReserva.cerrarRecursos();
-				if(this.conn!=null)
+				if (this.conn != null)
 					this.conn.close();
-			} 
-			catch (SQLException exception) 
-			{
+			} catch (SQLException exception) {
 				System.err.println("SQLException closing resources:" + exception.getMessage());
 				exception.printStackTrace();
 				throw exception;
 			}
 		}
-		
-		
-		
-		
+
 	}
-	
-	//RFC1
-	
-	public List<RFC1> ingresosOperadores() throws Exception
-	{
+
+	// RFC1
+
+	public List<RFC1> ingresosOperadores() throws Exception {
 		DAOOperador daoOperador = new DAOOperador();
-		
+
 		List<RFC1> resultado = new ArrayList<RFC1>();
-		try 
-		{		
-			this.conn = darConexion();				
+		try {
+			this.conn = darConexion();
 			daoOperador.setConn(conn);
-			
+
 			resultado = daoOperador.obtenerIngresosOperadores();
-			
+
 			return resultado;
-		} 
-		catch (SQLException e) 
-		{
+		} catch (SQLException e) {
 			System.err.println("SQLException:" + e.getMessage());
 			e.printStackTrace();
 			throw e;
-		} 
-		catch (Exception e) 
-		{
+		} catch (Exception e) {
 			System.err.println("GeneralException:" + e.getMessage());
 			e.printStackTrace();
 			throw e;
-		} 
-		finally 
-		{
-			try 
-			{
+		} finally {
+			try {
 				daoOperador.cerrarRecursos();
-				if(this.conn!=null)
+				if (this.conn != null)
 					this.conn.close();
-			} 
-			catch (SQLException exception) 
-			{
+			} catch (SQLException exception) {
 				System.err.println("SQLException closing resources:" + exception.getMessage());
 				exception.printStackTrace();
 				throw exception;
 			}
 		}
 	}
-	
-	//RFC2
-	
-	public List<Espacio> espaciosPopulares() throws Exception
-	{
+
+	// RFC2
+
+	public List<Espacio> espaciosPopulares() throws Exception {
 		DAOEspacio daoEspacio = new DAOEspacio();
-		
+
 		List<Espacio> resultado = new ArrayList<Espacio>();
-		try 
-		{		
-			this.conn = darConexion();				
+		try {
+			this.conn = darConexion();
 			daoEspacio.setConn(conn);
-			
+
 			resultado = daoEspacio.espaciosPopulares();
-			
+
 			return resultado;
-		} 
-		catch (SQLException e) 
-		{
+		} catch (SQLException e) {
 			System.err.println("SQLException:" + e.getMessage());
 			e.printStackTrace();
 			throw e;
-		} 
-		catch (Exception e) 
-		{
+		} catch (Exception e) {
 			System.err.println("GeneralException:" + e.getMessage());
 			e.printStackTrace();
 			throw e;
-		} 
-		finally 
-		{
-			try 
-			{
+		} finally {
+			try {
 				daoEspacio.cerrarRecursos();
-				if(this.conn!=null)
+				if (this.conn != null)
 					this.conn.close();
-			} 
-			catch (SQLException exception) 
-			{
+			} catch (SQLException exception) {
 				System.err.println("SQLException closing resources:" + exception.getMessage());
 				exception.printStackTrace();
 				throw exception;

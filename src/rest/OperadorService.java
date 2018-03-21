@@ -9,41 +9,34 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import tm.AlohAndesTransactionManager;
-import vos.ListaEspacios;
 import vos.ListaRFC1;
 
-public class OperadorService 
-{
+@Path("operadores")
+public class OperadorService {
 
 	@Context
 	private ServletContext context;
-	
-	private String getPath() 
-	{
+
+	private String getPath() {
 		return context.getRealPath("WEB-INF/ConnectionData");
 	}
-	
-	private String doErrorMessage(Exception e)
-	{
-		return "{ \"ERROR\": \""+ e.getMessage() + "\"}" ;
+
+	private String doErrorMessage(Exception e) {
+		return "{ \"ERROR\": \"" + e.getMessage() + "\"}";
 	}
-	
-	//RFC1
+
+	// RFC1
 	@GET
 	@Path("/ingresos")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getBoletas() 
-	{
+	public Response getBoletas() {
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
-		
-		try 
-		{
+
+		try {
 			ListaRFC1 ingresos = new ListaRFC1(tm.ingresosOperadores());
 			return Response.status(200).entity(ingresos).build();
-		} 
-		catch (Exception e) 
-		{
+		} catch (Exception e) {
 			return Response.status(500).entity(doErrorMessage(e)).build();
-		}		
+		}
 	}
 }
