@@ -5,7 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
+import vos.Cliente;
+import vos.Reserva;
 import vos.Servicio;
 import vos.Servicio.CategoriaServicio;
 
@@ -132,5 +135,27 @@ public class DAOServicio {
 		int finHorario = Integer.parseInt(rs.getString("FINHORARIO"));
 		
 		return new Servicio(id,categoria,descripcion,precioAdicional,inicioHorario,finHorario);
+	}
+	
+	public List<Servicio> buscarServiciosIdEspacio(long id) throws SQLException, Exception 
+	{
+		String sql = "SELECT * FROM ESPACIOSYSERVICIOS WHERE IDESPACIO  ='" + id + "'";
+		
+		ArrayList<Servicio> servicios = new ArrayList<Servicio>();
+		
+		System.out.println("SQL stmt:" + sql);
+
+		PreparedStatement prepStmt = conn.prepareStatement(sql);
+		recursos.add(prepStmt);
+		ResultSet rs = prepStmt.executeQuery();			
+		
+		while (rs.next()) 
+		{			
+			long idS = Long.parseLong(rs.getString("IDSERVICIO"));				
+			
+			servicios.add(buscarServicio(idS));
+		}
+		return servicios;
+		
 	}
 }
