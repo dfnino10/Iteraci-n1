@@ -195,4 +195,6 @@ public class Espacio
 		}
 		this.capacidad = capa;
 	}
+	
+	
 }

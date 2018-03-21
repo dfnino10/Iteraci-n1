@@ -5,11 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import vos.Espacio;
 import vos.Operador;
 import vos.Operador.CategoriaOperador;
+import vos.RFC1;
 
 public class DAOOperador {
 	private ArrayList<Object> recursos;
@@ -164,4 +166,31 @@ public class DAOOperador {
 		Long idOperador= Long.parseLong(rs.getString("IDOPERADOR"));
 		return buscarOperador(idOperador);
 	}
+	
+	//RFC1
+	
+	public List<RFC1> obtenerIngresosOperadores() throws SQLException, Exception
+	{
+		Date ahora = new Date();
+		Date inicioAñoAnterior = new Date(ahora.getYear()-1,1,1);
+		String sql = "SELECT ESPACIOS.IDOPERADOR AS ID, SUM(RESERVAS.PRECIO) AS INGRESOS FROM RESERVAS, ESPACIOS WHERE RESERVAS.IDESPACIO = ESPACIOS.ID AND RESERVAS.FECHAINICIO =" + inicioAñoAnterior + " GROUP BY ESPACIOS.IDOPERADOR";
+		
+		System.out.println("SQL stmt:" + sql);
+
+		PreparedStatement prepStmt = conn.prepareStatement(sql);
+		recursos.add(prepStmt);
+		ResultSet rs = prepStmt.executeQuery();	
+		
+		System.out.println(rs.next());
+		
+		List<RFC1> ingresos = new ArrayList<RFC1>();
+		
+		while(rs.next())
+		{
+			RFC1 nuevo = new RFC1(Long.parseLong(rs.getString("ID")),Double.parseDouble(rs.getString("INGRESOS")));
+			ingresos.add(nuevo);
+		}
+		
+		return ingresos;
+	}	
 }

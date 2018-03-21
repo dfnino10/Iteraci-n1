@@ -28,20 +28,47 @@ public class Reserva
 	@JsonProperty(value = "fechaReserva")
 	private Date fechaReserva;
 	
-	public Reserva(@JsonProperty(value = "idCliente") long idCliente, @JsonProperty(value = "idEspacio") long idEspacio, @JsonProperty(value = "fechaInicio") Date fechaInicio, @JsonProperty(value = "duracion") int duracion, @JsonProperty(value = "fechaReserva") Date fechaReserva)
+	@JsonProperty(value = "cancelado")
+	private boolean cancelado;
+	
+	@JsonProperty(value = "precio")
+	private double precio;
+	
+	public Reserva(@JsonProperty(value = "idCliente") long idCliente, @JsonProperty(value = "idEspacio") long idEspacio, @JsonProperty(value = "fechaInicio") Date fechaInicio, @JsonProperty(value = "duracion") int duracion, @JsonProperty(value = "fechaReserva") Date fechaReserva, @JsonProperty(value = "cancelado")boolean cancelado, @JsonProperty(value = "precio")double precio)
 	{
 		this.idCliente = idCliente;
 		this.idEspacio = idEspacio;
 		this.fechaInicio = fechaInicio;
 		this.duracion = duracion;
 		this.fechaReserva = fechaReserva;
+		this.precio = precio;
+		this.cancelado = cancelado;
 	}
 	
+	public double getPrecio() 
+	{		
+		return precio;
+	}
+
+	public void setPrecio(double precio) 
+	{
+		this.precio = precio;
+	}
+
 	public long getIdCliente() 
 	{
 		return idCliente;
 	}
+	
+	public boolean isCancelado()
+	{
+		return cancelado;
+	}
 
+	public void setCancelado(boolean cancelado) 
+	{
+		this.cancelado = cancelado;
+	}
 
 	public void setIdCliente(long idCliente)
 	{

@@ -66,8 +66,13 @@ public class DAOReserva
 			Date fechaInicio = Date.valueOf(rs.getString("FECHAINICIO"));
 			int duracion = Integer.parseInt(rs.getString("DURACION"));
 			Date fechaReserva = Date.valueOf(rs.getString("FECHARESERVA"));		
-			
-			reservas.add(new Reserva(idCliente, idEspacio,  fechaInicio,duracion, fechaReserva));
+			boolean cancelado = false;
+			double precio = Double.parseDouble(rs.getString("PRECIO"));
+			if(rs.getString("CANCELADO").equals('Y'))
+			{
+				cancelado = true;
+			}
+			reservas.add(new Reserva(idCliente, idEspacio,  fechaInicio,duracion, fechaReserva, cancelado, precio));
 		}
 		return reservas;
 	}
@@ -79,7 +84,8 @@ public class DAOReserva
 		sql += "idEspacio = "+ reserva.getIdEspacio() + ",";
 		sql += "duracion = "+ reserva.getDuracion() + ",";
 		sql += "fechaInicio = "+ reserva.getFechaInicio().toString() + ",";
-		sql += "fechaReserva = "+ reserva.getFechaReserva().toString() + ")";
+		sql += "fechaReserva = "+ reserva.getFechaReserva().toString() + ",";
+		
 		
 		DAOCliente daoCliente = new DAOCliente();
 		DAOEspacio daoEspacio = new DAOEspacio();
@@ -88,6 +94,20 @@ public class DAOReserva
 		
 		Cliente cliente = daoCliente.buscarCliente(reserva.getIdCliente());
 		Espacio espacio = daoEspacio.buscarEspacio(reserva.getIdEspacio());
+		
+		if(!reserva.isCancelado())
+		{
+			reserva.setPrecio(espacio.getPrecio()*reserva.getDuracion());
+		}
+		
+		char cancelado = 'N';
+		if(reserva.isCancelado())
+		{
+			cancelado = 'Y';
+		}
+		
+		sql += "cancelado = "+ cancelado + ",";
+		sql += "precio = " + reserva.getPrecio() +")";
 		
 		cliente.getReservas().add(reserva);
 		espacio.getReservas().add(reserva);
@@ -102,13 +122,39 @@ public class DAOReserva
 	}
 	
 	public void updateReserva(Reserva reserva) throws SQLException, Exception
-	{
+	{		
 		String sql = "UPDATE RESERVAS SET ";
 		sql += "idCliente = "+ reserva.getIdCliente() + ",";
 		sql += "idEspacio = "+ reserva.getIdEspacio() + ",";
 		sql += "duracion = "+ reserva.getDuracion() + ",";
 		sql += "fechaInicio = "+ reserva.getFechaInicio().toString() + ",";
-		sql += "fechaReserva = "+ reserva.getFechaReserva().toString() + ",";
+		sql += "fechaReserva = "+ reserva.getFechaReserva().toString() + ",";		
+
+		DAOCliente daoCliente = new DAOCliente();
+		DAOEspacio daoEspacio = new DAOEspacio();
+		daoCliente.setConn(conn);
+		daoEspacio.setConn(conn);
+		
+		Cliente cliente = daoCliente.buscarCliente(reserva.getIdCliente());
+		Espacio espacio = daoEspacio.buscarEspacio(reserva.getIdEspacio());
+		
+		if(!reserva.isCancelado())
+		{
+			reserva.setPrecio(espacio.getPrecio()*reserva.getDuracion());
+		}
+			
+		char cancelado = 'N';
+		if(reserva.isCancelado())
+		{
+			cancelado = 'Y';
+		}
+		
+		if(!buscarReserva(reserva.getIdCliente(), reserva.getIdEspacio()).isCancelado())
+		{
+			sql += "cancelado = "+ cancelado + ",";
+		}
+		
+		sql += "precio = " + reserva.getPrecio() +",";
 		sql += " WHERE IDCLIENTE = " + reserva.getIdCliente() + " AND IDESPACIO = " + reserva.getIdEspacio();
 
 		System.out.println("SQL stmt:" + sql);
@@ -143,8 +189,14 @@ public class DAOReserva
 		Date fechaInicio = Date.valueOf(rs.getString("FECHAINICIO"));
 		int duracion = Integer.parseInt(rs.getString("DURACION"));
 		Date fechaReserva = Date.valueOf(rs.getString("FECHARESERVA"));		
+		boolean cancelado = false;
+		double precio = Double.parseDouble(rs.getString("PRECIO"));
+		if(rs.getString("CANCELADO").equals('Y'))
+		{
+			cancelado = true;
+		}
 		
-		return new Reserva(idCliente, idEspacio, fechaInicio, duracion, fechaReserva);
+		return new Reserva(idCliente, idEspacio, fechaInicio, duracion, fechaReserva, cancelado, precio);
 	}
 	
 	public ArrayList<Reserva> buscarReservasIdCliente(long idCliente) throws SQLException, Exception 
