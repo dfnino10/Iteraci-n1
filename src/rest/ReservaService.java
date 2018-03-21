@@ -1,7 +1,5 @@
 package rest;
 
-import java.util.Date;
-
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -13,63 +11,52 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import tm.AlohAndesTransactionManager;
-import vos.Espacio;
 import vos.Reserva;
 
-public class ReservaService 
-{
+@Path("reservas")
+public class ReservaService {
 	@Context
 	private ServletContext context;
-	
-	private String getPath() 
-	{
+
+	private String getPath() {
 		return context.getRealPath("WEB-INF/ConnectionData");
 	}
-	
-	private String doErrorMessage(Exception e)
-	{
-		return "{ \"ERROR\": \""+ e.getMessage() + "\"}" ;
+
+	private String doErrorMessage(Exception e) {
+		return "{ \"ERROR\": \"" + e.getMessage() + "\"}";
 	}
-	
-	//RF4
-	
+
+	// RF4
+
 	@POST
 	@Path("/reserva")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response agregarReserva(Reserva reserva) 
-	{
+	public Response agregarReserva(Reserva reserva) {
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
-		
-		try 
-		{
+
+		try {
 			tm.addReserva(reserva);
 			return Response.status(200).entity(reserva).build();
-		} 
-		catch (Exception e) 
-		{
+		} catch (Exception e) {
 			return Response.status(500).entity(doErrorMessage(e)).build();
-		}		
+		}
 	}
-	
-	//RF5
-	
+
+	// RF5
+
 	@DELETE
 	@Path("/reserva")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response cancelarReserva(Reserva reserva) 
-	{
+	public Response cancelarReserva(Reserva reserva) {
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
-		
-		try 
-		{
+
+		try {
 			tm.cancelarReserva(reserva);
 			return Response.status(200).entity(reserva).build();
-		} 
-		catch (Exception e) 
-		{
+		} catch (Exception e) {
 			return Response.status(500).entity(doErrorMessage(e)).build();
-		}		
+		}
 	}
 }

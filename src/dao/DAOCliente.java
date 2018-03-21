@@ -8,49 +8,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vos.Cliente;
-import vos.Espacio;
 import vos.Reserva;
 import vos.Cliente.Vinculo;
 
-public class DAOCliente 
-{
+public class DAOCliente {
 	private ArrayList<Object> recursos;
 
 	private Connection conn;
 
-	public DAOCliente()
-	{
+	public DAOCliente() {
 		recursos = new ArrayList<Object>();
 	}
-	
-	public void cerrarRecursos()
-	{
-		for(Object ob : recursos)
-		{
-			if(ob instanceof PreparedStatement)
-			{
-				try 
-				{
+
+	public void cerrarRecursos() {
+		for (Object ob : recursos) {
+			if (ob instanceof PreparedStatement) {
+				try {
 					((PreparedStatement) ob).close();
-				} 
-				catch (Exception ex) 
-				{
+				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			}
-				
+
 		}
 	}
-	
-	public void setConn(Connection con)
-	{
+
+	public void setConn(Connection con) {
 		this.conn = con;
-	}	
-	
-	public ArrayList<Cliente> darClientes() throws SQLException, Exception 
-	{
+	}
+
+	public ArrayList<Cliente> darClientes() throws SQLException, Exception {
 		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
-		
+
 		String sql = "SELECT * FROM CLIENTES";
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
@@ -58,33 +47,31 @@ public class DAOCliente
 		ResultSet rs = prepStmt.executeQuery();
 		System.out.println(rs.next());
 
-		while (rs.next()) 
-		{
+		while (rs.next()) {
 			long id = Long.parseLong(rs.getString("ID"));
 			long identificacion = Long.parseLong(rs.getString("IDENTIFICACION"));
 			String nombre = rs.getString("NOMBRE");
 			int edad = Integer.parseInt(rs.getString("EDAD"));
 			String direccion = rs.getString("DIRECCION");
-			Vinculo vinculo = Vinculo.valueOf(rs.getString("VINCULO"));							
+			Vinculo vinculo = Vinculo.valueOf(rs.getString("VINCULO"));
 			DAOReserva daoReserva = new DAOReserva();
-			daoReserva.setConn(conn);			
-			
+			daoReserva.setConn(conn);
+
 			List<Reserva> reservas = daoReserva.buscarReservasIdCliente(id);
-			
+
 			clientes.add(new Cliente(id, identificacion, nombre, edad, direccion, vinculo, reservas));
 		}
 		return clientes;
-	}	
-	
-	public void addCliente(Cliente cliente) throws SQLException, Exception 
-	{				
+	}
+
+	public void addCliente(Cliente cliente) throws SQLException, Exception {
 		String sql = "INSERT INTO CLIENTES VALUES (";
-		sql += "id = "+ cliente.getId() + ",";
+		sql += "id = " + cliente.getId() + ",";
 		sql += "identificacion = " + cliente.getIdentificacion() + ",";
-		sql += "nombre = " + cliente.getNombre()+",";
-		sql += "direccion = " + cliente.getDireccion()+",";
+		sql += "nombre = " + cliente.getNombre() + ",";
+		sql += "direccion = " + cliente.getDireccion() + ",";
 		sql += "edad = " + cliente.getEdad() + ",";
-		sql += "vinculo = " +cliente.getVinculo().toString()+")";
+		sql += "vinculo = " + cliente.getVinculo().toString() + ")";
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -92,15 +79,14 @@ public class DAOCliente
 		recursos.add(prepStmt);
 		prepStmt.executeQuery();
 	}
-	
-	public void updateCliente(Cliente cliente) throws SQLException, Exception
-	{
+
+	public void updateCliente(Cliente cliente) throws SQLException, Exception {
 		String sql = "UPDATE CLIENTES SET ";
 		sql += "identificacion = " + cliente.getIdentificacion() + ",";
-		sql += "nombre = " + cliente.getNombre()+",";
-		sql += "direccion = " + cliente.getDireccion()+",";
+		sql += "nombre = " + cliente.getNombre() + ",";
+		sql += "direccion = " + cliente.getDireccion() + ",";
 		sql += "edad = " + cliente.getEdad() + ",";
-		sql += "vinculo = " +cliente.getVinculo().toString()+",";
+		sql += "vinculo = " + cliente.getVinculo().toString() + ",";
 		sql += " WHERE ID = " + cliente.getId();
 
 		System.out.println("SQL stmt:" + sql);
@@ -109,9 +95,8 @@ public class DAOCliente
 		recursos.add(prepStmt);
 		prepStmt.executeQuery();
 	}
-	
-	public void deleteCliente(Cliente cliente) throws SQLException, Exception
-	{
+
+	public void deleteCliente(Cliente cliente) throws SQLException, Exception {
 		String sql = "DELETE FROM CLIENTES";
 		sql += " WHERE ID = " + cliente.getId();
 
@@ -120,42 +105,40 @@ public class DAOCliente
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		prepStmt.executeQuery();
-	}	
-	
-	public Cliente buscarCliente(long id) throws SQLException, Exception 
-	{		
+	}
+
+	public Cliente buscarCliente(long id) throws SQLException, Exception {
 		String sql = "SELECT * FROM CLIENTES WHERE CATEGORIA_ID  ='" + id + "'";
 
 		System.out.println("SQL stmt:" + sql);
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
-		ResultSet rs = prepStmt.executeQuery();		
-		
+		ResultSet rs = prepStmt.executeQuery();
+
 		long identificacion = Long.parseLong(rs.getString("IDENTIFICACION"));
 		String nombre = rs.getString("NOMBRE");
 		int edad = Integer.parseInt(rs.getString("EDAD"));
 		String direccion = rs.getString("DIRECCION");
 		Vinculo vinculo = Vinculo.valueOf(rs.getString("VINCULO"));
-		
+
 		DAOReserva daoReserva = new DAOReserva();
 		daoReserva.setConn(conn);
-		
+
 		List<Reserva> reservas = daoReserva.buscarReservasIdCliente(id);
 
-		return new Cliente(id, identificacion,nombre, edad, direccion, vinculo, reservas);
+		return new Cliente(id, identificacion, nombre, edad, direccion, vinculo, reservas);
 	}
-	
-	public Cliente buscarClienteIdReserva(long id) throws SQLException, Exception 
-	{
+
+	public Cliente buscarClienteIdReserva(long id) throws SQLException, Exception {
 		String sql = "SELECT * FROM RESERVAS WHERE CATEGORIA_ID  ='" + id + "'";
-		
+
 		System.out.println("SQL stmt:" + sql);
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
-		ResultSet rs = prepStmt.executeQuery();	
-		
+		ResultSet rs = prepStmt.executeQuery();
+
 		Long idCliente = Long.parseLong(rs.getString("IDCLIENTE"));
 		return buscarCliente(idCliente);
 	}

@@ -1,5 +1,0 @@
-CREATE TABLE RESERVAS(
-id NUMBER(20,0),
-duración NUMBER(20,0),
-fechaInicio DATE
-);
