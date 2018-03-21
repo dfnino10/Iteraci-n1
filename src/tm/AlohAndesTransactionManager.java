@@ -209,31 +209,27 @@ public class AlohAndesTransactionManager
 			{
 				reserva.setCancelado(true);
 				espacio.setPrecio(espacio.getPrecio()*0.1);
-				throw new Exception("Se canceló la reserva, pero recuerde que debe pagarse el 10% de la reserva: " + espacio.getPrecio());
 			}
 			
 			if(reserva.getDuracion() < 7 && fechaCancelacion.after(reserva.calcularFechaConDiasDespues(3)))
 			{
 				reserva.setCancelado(true);
 				espacio.setPrecio(espacio.getPrecio()*0.3);
-				throw new Exception("Se canceló la reserva, pero recuerde que debe pagarse el 30% de la reserva: " + espacio.getPrecio());
 			}
 			
 			if(reserva.getDuracion() > 7 && fechaCancelacion.before(reserva.calcularFechaConDiasDespues(8)))
 			{
 				reserva.setCancelado(true);
 				espacio.setPrecio(espacio.getPrecio()*0.1);
-				throw new Exception("Se canceló la reserva, pero recuerde que debe pagarse el 10% de la reserva: " + espacio.getPrecio());
 			}
 			
 			if(reserva.getDuracion() > 7 && fechaCancelacion.after(reserva.calcularFechaConDiasDespues(7)))
 			{
 				reserva.setCancelado(true);
 				espacio.setPrecio(espacio.getPrecio()*0.3);
-				throw new Exception("Se canceló la reserva, pero recuerde que debe pagarse el 30% de la reserva: " + espacio.getPrecio());
 			}
 			
-			daoReserva.deleteReserva(reserva);
+			daoReserva.updateReserva(reserva);
 		} 
 		catch (SQLException e) 
 		{
