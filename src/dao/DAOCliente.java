@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import vos.Cliente;
+import vos.Espacio;
 import vos.Cliente.Vinculo;
 
 public class DAOCliente 
@@ -62,6 +63,9 @@ public class DAOCliente
 			int edad = Integer.parseInt(rs.getString("EDAD"));
 			String direccion = rs.getString("DIRECCION");
 			Vinculo vinculo = Vinculo.valueOf(rs.getString("VINCULO"));							
+			DAOReserva daoReserva = new DAOReserva();
+			daoReserva.setConn(conn);
+			
 			
 			clientes.add(new Cliente(id, identificacion, nombre, edad, direccion, vinculo));
 		}
@@ -104,7 +108,7 @@ public class DAOCliente
 	
 	public void deleteCliente(Cliente cliente) throws SQLException, Exception
 	{
-		String sql = "DELETE FROM BOLETA";
+		String sql = "DELETE FROM CLIENTES";
 		sql += " WHERE ID = " + cliente.getId();
 
 		System.out.println("SQL stmt:" + sql);
@@ -131,5 +135,19 @@ public class DAOCliente
 		Vinculo vinculo = Vinculo.valueOf(rs.getString("VINCULO"));
 
 		return new Cliente(id, identificacion,nombre, edad, direccion, vinculo);
+	}
+	
+	public Cliente buscarClienteIdReserva(long id) throws SQLException, Exception 
+	{
+		String sql = "SELECT * FROM RESERVAS WHERE CATEGORIA_ID  ='" + id + "'";
+		
+		System.out.println("SQL stmt:" + sql);
+
+		PreparedStatement prepStmt = conn.prepareStatement(sql);
+		recursos.add(prepStmt);
+		ResultSet rs = prepStmt.executeQuery();	
+		
+		Long idCliente = Long.parseLong(rs.getString("IDCLIENTE"));
+		return buscarCliente(idCliente);
 	}
 }
