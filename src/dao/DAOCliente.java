@@ -5,8 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+
 import vos.Cliente;
 import vos.Espacio;
+import vos.Reserva;
 import vos.Cliente.Vinculo;
 
 public class DAOCliente 
@@ -64,10 +67,11 @@ public class DAOCliente
 			String direccion = rs.getString("DIRECCION");
 			Vinculo vinculo = Vinculo.valueOf(rs.getString("VINCULO"));							
 			DAOReserva daoReserva = new DAOReserva();
-			daoReserva.setConn(conn);
+			daoReserva.setConn(conn);			
 			
+			List<Reserva> reservas = daoReserva.buscarReservasIdCliente(id);
 			
-			clientes.add(new Cliente(id, identificacion, nombre, edad, direccion, vinculo));
+			clientes.add(new Cliente(id, identificacion, nombre, edad, direccion, vinculo, reservas));
 		}
 		return clientes;
 	}	
@@ -133,8 +137,13 @@ public class DAOCliente
 		int edad = Integer.parseInt(rs.getString("EDAD"));
 		String direccion = rs.getString("DIRECCION");
 		Vinculo vinculo = Vinculo.valueOf(rs.getString("VINCULO"));
+		
+		DAOReserva daoReserva = new DAOReserva();
+		daoReserva.setConn(conn);
+		
+		List<Reserva> reservas = daoReserva.buscarReservasIdCliente(id);
 
-		return new Cliente(id, identificacion,nombre, edad, direccion, vinculo);
+		return new Cliente(id, identificacion,nombre, edad, direccion, vinculo, reservas);
 	}
 	
 	public Cliente buscarClienteIdReserva(long id) throws SQLException, Exception 

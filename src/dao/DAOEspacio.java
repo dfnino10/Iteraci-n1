@@ -13,6 +13,7 @@ import vos.Espacio;
 import vos.Habitacion;
 import vos.Operador;
 import vos.Reserva;
+import vos.Servicio;
 import vos.Cliente.Vinculo;
 
 public class DAOEspacio 
@@ -93,7 +94,12 @@ public class DAOEspacio
 			
 			Operador operador = daoOperador.buscarOperadorIdEspacio(id);
 			
-			espacios.add(new Espacio(id, registro, capacidad, tamaño, ubicacion, precio, fechaRetiro,operador,reservas,,habitaciones));
+			DAOServicio daoServicio = new DAOServicio();
+			daoServicio.setConn(conn);
+			
+			List<Servicio> servicios = daoServicio.buscarServiciosIdEspacio(id);
+			
+			espacios.add(new Espacio(id, registro, capacidad, tamaño, ubicacion, precio, fechaRetiro,operador,reservas,servicios,habitaciones));
 		}
 		return espacios;
 	}	
@@ -163,7 +169,34 @@ public class DAOEspacio
 		double precio = Double.parseDouble(rs.getString("PRECIO"));
 		Date fechaRetiro = Date.valueOf(rs.getString("FECHARETIRO"));		
 		
-		return new Espacio(id, registro, capacidad, tamaño, ubicacion, precio, fechaRetiro);
+		DAOHabitacion daoHabitacion = new DAOHabitacion();
+		daoHabitacion.setConn(conn);
+		
+		List<Long> habitacionesId = daoHabitacion.buscarHabitacionesIdEspacio(id);
+		
+		List<Habitacion> habitaciones = new ArrayList<Habitacion>();
+		
+		for(Long hId : habitacionesId)
+		{
+			habitaciones.add(daoHabitacion.buscarHabitacion(hId));
+		}
+		
+		DAOReserva daoReserva = new DAOReserva();
+		daoReserva.setConn(conn);
+		
+		List<Reserva> reservas = daoReserva.buscarReservasIdEspacio(id);
+		
+		DAOOperador daoOperador = new DAOOperador();
+		daoOperador.setConn(conn);
+		
+		Operador operador = daoOperador.buscarOperadorIdEspacio(id);
+		
+		DAOServicio daoServicio = new DAOServicio();
+		daoServicio.setConn(conn);
+		
+		List<Servicio> servicios = daoServicio.buscarServiciosIdEspacio(id);
+		
+		return new Espacio(id, registro, capacidad, tamaño, ubicacion, precio, fechaRetiro, operador, reservas, servicios, habitaciones);
 	}
 	
 	public ArrayList<Integer> buscarEspaciosIdOperador(long pId) throws SQLException, Exception 
