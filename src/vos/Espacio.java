@@ -1,6 +1,6 @@
 package vos;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.*;
@@ -127,9 +127,9 @@ public class Espacio
 		return fechaRetiro;
 	}
 
-	public void setFechaRetiro(Date fechaRetiro) 
+	public void setFechaRetiro(Date fechaCancelacion) 
 	{
-		this.fechaRetiro = fechaRetiro;
+		this.fechaRetiro = fechaCancelacion;
 	}
 
 	public Operador getOperador()
@@ -171,4 +171,28 @@ public class Espacio
 	{
 		this.habitaciones = habitaciones;
 	}	
+	
+	public int calcularOcupacionEnFecha(java.util.Date date)
+	{
+		int ocupacion = 0;
+		for(Reserva r : reservas)
+		{
+			if (r.getFechaInicio().before(date) && (r.getFechaInicio().getMonth()*30 + r.getFechaInicio().getDay() +r.getDuracion() <= date.getMonth()*30 + date.getDay()))
+			{
+				ocupacion ++;
+			}
+		}
+		return ocupacion;
+	}
+	
+	public void calcularCapacidad()
+	{
+		int capa = 0;
+		
+		for(Habitacion h: habitaciones)
+		{
+			capa += h.getCapacidad();
+		}
+		this.capacidad = capa;
+	}
 }

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import vos.Espacio;
 import vos.Habitacion;
@@ -166,5 +167,25 @@ public class DAOHabitacion
 		Espacio espacio = daoEspacio.buscarEspacio(daoEspacio.buscarEspacioIdHabitacion(id));
 
 		return new Habitacion(id, categoria, compartido, capacidad, espacio);
+	}
+	
+	public List<Long> buscarHabitacionesIdEspacio(long id) throws SQLException, Exception 
+	{		
+		String sql = "SELECT * FROM ESPACIOSYHABITACIONES WHERE IDESPACIO  ='" + id + "'";
+
+		System.out.println("SQL stmt:" + sql);
+
+		PreparedStatement prepStmt = conn.prepareStatement(sql);
+		recursos.add(prepStmt);
+		ResultSet rs = prepStmt.executeQuery();			
+		
+		List<Long> habitaciones = new ArrayList<Long>();
+		while(rs.next())
+		{
+			long idH = Long.parseLong(rs.getString("ID"));
+			habitaciones.add(idH);
+		}		
+
+		return habitaciones;
 	}
 }

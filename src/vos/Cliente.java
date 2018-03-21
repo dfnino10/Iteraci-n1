@@ -1,5 +1,6 @@
 package vos;
 
+import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.*;
@@ -128,4 +129,16 @@ public class Cliente
 	{
 		this.reservas = reservas;
 	}	
+	
+	public boolean reservaHoy(Date fecha)
+	{
+		boolean resHoy = false;
+		for(Reserva r : reservas)
+		{
+			if(r.getFechaReserva().equals(fecha));
+				resHoy = true;
+		}
+		
+		return resHoy;		
+	}
 }
