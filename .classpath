@@ -2,5 +2,27 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/access-bridge-64.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/charsets.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/cldrdata.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dnsns.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jaccess.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jackson-all-1.7.5.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/javax.servlet.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/javax.ws.rs.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jce.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jfr.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jfxrt.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jsse.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/localedata.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/nashorn.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ojdbc6.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/resources.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/rt.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/sunec.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/sunjce_provider.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/sunmscapi.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/sunpkcs11.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/zipfs.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
