@@ -257,7 +257,7 @@ public class AlohAndesTransactionManager {
 			}
 
 			espacio.setFechaRetiro(fechaCancelacion);
-			daoEspacio.updateEspacio(espacio);
+			daoEspacio.deleteEspacio(espacio);
 		} catch (SQLException e) {
 			System.err.println("SQLException:" + e.getMessage());
 			e.printStackTrace();

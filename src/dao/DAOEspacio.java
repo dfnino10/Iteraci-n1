@@ -137,7 +137,7 @@ public class DAOEspacio {
 	}
 
 	public Espacio buscarEspacio(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM ESPACIOS WHERE CATEGORIA_ID  ='" + id + "'";
+		String sql = "SELECT * FROM ESPACIOS WHERE ID  ='" + id + "'";
 
 		System.out.println("SQL stmt:" + sql);
 

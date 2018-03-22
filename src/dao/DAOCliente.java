@@ -108,7 +108,7 @@ public class DAOCliente {
 	}
 
 	public Cliente buscarCliente(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM CLIENTES WHERE CATEGORIA_ID  ='" + id + "'";
+		String sql = "SELECT * FROM CLIENTES WHERE ID  =" + id;
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -131,7 +131,7 @@ public class DAOCliente {
 	}
 
 	public Cliente buscarClienteIdReserva(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM RESERVAS WHERE CATEGORIA_ID  ='" + id + "'";
+		String sql = "SELECT * FROM RESERVAS WHERE ID  =" + id + "";
 
 		System.out.println("SQL stmt:" + sql);
 
