@@ -9,9 +9,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import vos.CategoriaServicio;
 import vos.Espacio;
 import vos.Operador;
-import vos.Operador.CategoriaOperador;
+import vos.CategoriaOperador;
 import vos.RFC1;
 
 public class DAOOperador {
@@ -55,7 +57,9 @@ public class DAOOperador {
 			long documento = Long.parseLong(rs.getString("DOCUMENTO"));
 			String nombre = rs.getString("NOMBRE");
 			long registro = Integer.parseInt(rs.getString("REGISTRO"));
-			CategoriaOperador categoría = CategoriaOperador.valueOf(rs.getString("CATEGORÍA"));
+			DAOCategoriaOperador daoCategoriaOperador = new DAOCategoriaOperador();			
+			daoCategoriaOperador.setConn(conn);		
+			CategoriaOperador categoria = daoCategoriaOperador.buscarCategoriaOperador(Long.parseLong(rs.getString("ID_CATEGORIA")));			
 			DAOEspacio daoEspacio = new DAOEspacio();
 			daoEspacio.setConn(conn);
 
@@ -67,7 +71,7 @@ public class DAOOperador {
 				listaEspacio.add(daoEspacio.buscarEspacio(integer));
 			}
 
-			operadores.add(new Operador(id, registro, nombre, categoría, listaEspacio, documento));
+			operadores.add(new Operador(id, registro, nombre, categoria, listaEspacio, documento));
 		}
 		return operadores;
 	}
@@ -125,7 +129,9 @@ public class DAOOperador {
 		long documento = Long.parseLong(rs.getString("DOCUMENTO"));
 		String nombre = rs.getString("NOMBRE");
 		long registro = Long.parseLong(rs.getString("REGISTRO"));
-		CategoriaOperador categoria = CategoriaOperador.valueOf(rs.getString("CATEGORÍA"));
+		DAOCategoriaOperador daoCategoriaOperador = new DAOCategoriaOperador();			
+		daoCategoriaOperador.setConn(conn);		
+		CategoriaOperador categoria = daoCategoriaOperador.buscarCategoriaOperador(Long.parseLong(rs.getString("ID_CATEGORIA")));			
 		DAOEspacio daoEspacio = new DAOEspacio();
 		daoEspacio.setConn(conn);
 

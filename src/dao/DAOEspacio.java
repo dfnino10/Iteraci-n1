@@ -125,7 +125,8 @@ public class DAOEspacio {
 		prepStmt.executeQuery();
 	}
 
-	public void deleteEspacio(Espacio espacio) throws SQLException, Exception {
+	public void deleteEspacio(Espacio espacio) throws SQLException, Exception 
+	{
 		String sql = "DELETE FROM ESPACIOS";
 		sql += " WHERE ID = " + espacio.getId();
 

@@ -14,10 +14,6 @@ public class Operador {
 	@JsonProperty(value = "id")
 	private long id;
 
-	public enum CategoriaOperador {
-		HOTEL, HOSTAL, PERSONA_NATURAL, MIEMBRO_DE_LA_COMUNIDAD, VECINO, VIVIENDA_UNIVERSITARIA
-	}
-
 	@JsonProperty(value = "categoria")
 	private CategoriaOperador categoria;
 

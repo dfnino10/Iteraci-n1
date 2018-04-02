@@ -14,14 +14,13 @@ import dao.DAOEspacio;
 import dao.DAOOperador;
 import dao.DAOReserva;
 import vos.Cliente;
-import vos.Cliente.Vinculo;
 import vos.Espacio;
 import vos.Operador;
-import vos.Operador.CategoriaOperador;
 import vos.RFC1;
 import vos.Reserva;
 
-public class AlohAndesTransactionManager {
+public class AlohAndesTransactionManager 
+{
 	private static final String CONNECTION_DATA_FILE_NAME_REMOTE = "/conexion.properties";
 
 	private String connectionDataPath;
@@ -65,7 +64,8 @@ public class AlohAndesTransactionManager {
 
 	// RF4
 
-	public void addReserva(Reserva reserva) throws Exception {
+	public void addReserva(Reserva reserva) throws Exception 
+	{
 		DAOReserva daoReserva = new DAOReserva();
 		DAOCliente daoCliente = new DAOCliente();
 		DAOEspacio daoEspacio = new DAOEspacio();
@@ -94,8 +94,8 @@ public class AlohAndesTransactionManager {
 				throw new Exception("La reserva debe iniciar después que la fecha actual");
 			}
 
-			if (espacio.getOperador().getCategoria() == CategoriaOperador.MIEMBRO_DE_LA_COMUNIDAD
-					|| espacio.getOperador().getCategoria() == CategoriaOperador.PERSONA_NATURAL) {
+			if (espacio.getOperador().getCategoria().getCategoria().toUpperCase().equals("MIEMBRO_DE_LA_COMUNIDAD")
+					|| espacio.getOperador().getCategoria().getCategoria().toUpperCase().equals("PERSONA_NATURAL")) {
 				if (reserva.getDuracion() <= 30) {
 					throw new Exception(
 							"La reserva tiene que durar mínimo 30 días si se quiere reservar un espacio de ese operador");
@@ -106,10 +106,10 @@ public class AlohAndesTransactionManager {
 				throw new Exception("La nueva reserva excediría la capacidad del espacio a reservar");
 			}
 
-			if (espacio.getOperador().getCategoria() == CategoriaOperador.VIVIENDA_UNIVERSITARIA
-					&& (cliente.getVinculo() != Vinculo.ESTUDIANTE || cliente.getVinculo() != Vinculo.PROFESOR
-							|| cliente.getVinculo() != Vinculo.EMPLEADO
-							|| cliente.getVinculo() != Vinculo.PROFESOR_INVITADO)) {
+			if (espacio.getOperador().getCategoria().getCategoria().toUpperCase().equals("VIVIENDA_UNIVERSITARIA")
+					&& (cliente.getVinculo().getVinculo().toUpperCase().equals("ESTUDIANTE") || cliente.getVinculo().getVinculo().toUpperCase().equals("PROFESOR")
+							|| cliente.getVinculo().getVinculo().toUpperCase().equals("EMPLEADO")
+							|| cliente.getVinculo().getVinculo().toUpperCase().equals("PROFESOR_INVITADO"))) {
 				throw new Exception("Sólo estudiantes, profesores y empleados pueden usar vivienda universitaria");
 			}
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 import vos.Cliente;
 import vos.Reserva;
-import vos.Cliente.Vinculo;
+import vos.Vinculo;
 
 public class DAOCliente {
 	private ArrayList<Object> recursos;
@@ -53,7 +53,9 @@ public class DAOCliente {
 			String nombre = rs.getString("NOMBRE");
 			int edad = Integer.parseInt(rs.getString("EDAD"));
 			String direccion = rs.getString("DIRECCION");
-			Vinculo vinculo = Vinculo.valueOf(rs.getString("VINCULO"));
+			DAOVinculo daoVinculo = new DAOVinculo();			
+			daoVinculo.setConn(conn);		
+			Vinculo vinculo= daoVinculo.buscarVinculo(Long.parseLong(rs.getString("ID_CATEGORIA")));	
 			DAOReserva daoReserva = new DAOReserva();
 			daoReserva.setConn(conn);
 
@@ -120,7 +122,9 @@ public class DAOCliente {
 		String nombre = rs.getString("NOMBRE");
 		int edad = Integer.parseInt(rs.getString("EDAD"));
 		String direccion = rs.getString("DIRECCION");
-		Vinculo vinculo = Vinculo.valueOf(rs.getString("VINCULO"));
+		DAOVinculo daoVinculo = new DAOVinculo();			
+		daoVinculo.setConn(conn);		
+		Vinculo vinculo= daoVinculo.buscarVinculo(Long.parseLong(rs.getString("ID_CATEGORIA")));			
 
 		DAOReserva daoReserva = new DAOReserva();
 		daoReserva.setConn(conn);

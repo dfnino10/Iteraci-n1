@@ -11,11 +11,7 @@ import org.codehaus.jackson.annotate.*;
 public class Servicio {
 	@JsonProperty(value = "id")
 	private long id;
-
-	public enum CategoriaServicio {
-		SEGURO, RECEPCIÓN, COCINA, BAÑO_COMPARTIDO, BAÑO_PRIVADO, GIMNASIO, ASEO, TV, INTERNET, SERVICIOS_PÚBLICOS, OTRO
-	}
-
+	
 	@JsonProperty(value = "categoria")
 	private CategoriaServicio categoria;
 

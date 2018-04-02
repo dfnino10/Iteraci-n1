@@ -36,7 +36,8 @@ public class ReservaService {
 	public Response agregarReserva(Reserva reserva) {
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
 
-		try {
+		try 
+		{
 			tm.addReserva(reserva);
 			return Response.status(200).entity(reserva).build();
 		} catch (Exception e) {
