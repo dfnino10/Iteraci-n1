@@ -7,9 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import vos.CategoriaOperador;
 import vos.Espacio;
 import vos.Habitacion;
-import vos.Habitacion.CategoriaHabitacion;
+import vos.CategoriaHabitacion;
 
 public class DAOHabitacion {
 	private ArrayList<Object> recursos;
@@ -54,7 +55,9 @@ public class DAOHabitacion {
 			if (rs.getString("COMPARTIDO").equals('Y')) {
 				compartido = true;
 			}
-			CategoriaHabitacion categoria = CategoriaHabitacion.valueOf(rs.getString("CATEGORIA"));
+			DAOCategoriaHabitacion daoCategoriaHabitacion = new DAOCategoriaHabitacion();			
+			daoCategoriaHabitacion.setConn(conn);		
+			CategoriaHabitacion categoria = daoCategoriaHabitacion.buscarCategoriaHabitacion(Long.parseLong(rs.getString("ID_CATEGORIA")));			
 			DAOEspacio daoEspacio = new DAOEspacio();
 			daoEspacio.setConn(conn);
 			Espacio espacio = daoEspacio.buscarEspacio(daoEspacio.buscarEspacioIdHabitacion(id));
@@ -138,7 +141,9 @@ public class DAOHabitacion {
 		if (rs.getString("COMPARTIDO").equals('Y')) {
 			compartido = true;
 		}
-		CategoriaHabitacion categoria = CategoriaHabitacion.valueOf(rs.getString("CATEGORIA"));
+		DAOCategoriaHabitacion daoCategoriaHabitacion = new DAOCategoriaHabitacion();			
+		daoCategoriaHabitacion.setConn(conn);		
+		CategoriaHabitacion categoria = daoCategoriaHabitacion.buscarCategoriaHabitacion(Long.parseLong(rs.getString("ID_CATEGORIA")));			
 		DAOEspacio daoEspacio = new DAOEspacio();
 		daoEspacio.setConn(conn);
 		Espacio espacio = daoEspacio.buscarEspacio(daoEspacio.buscarEspacioIdHabitacion(id));

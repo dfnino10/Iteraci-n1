@@ -4,6 +4,7 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -35,7 +36,8 @@ public class ReservaService {
 	public Response agregarReserva(Reserva reserva) {
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
 
-		try {
+		try 
+		{
 			tm.addReserva(reserva);
 			return Response.status(200).entity(reserva).build();
 		} catch (Exception e) {
@@ -45,7 +47,7 @@ public class ReservaService {
 
 	// RF5
 
-	@DELETE
+	@PUT
 	@Path("/reserva")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)

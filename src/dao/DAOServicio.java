@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vos.Servicio;
-import vos.Servicio.CategoriaServicio;
+import vos.CategoriaServicio;
 
 public class DAOServicio {
 	private ArrayList<Object> recursos;
@@ -48,7 +49,9 @@ public class DAOServicio {
 
 		while (rs.next()) {
 			long id = Long.parseLong(rs.getString("ID"));
-			CategoriaServicio categoria = CategoriaServicio.valueOf(rs.getString("CATEGORÍA"));
+			DAOCategoriaServicio daoCategoriaServicio = new DAOCategoriaServicio();			
+			daoCategoriaServicio.setConn(conn);		
+			CategoriaServicio categoria = daoCategoriaServicio.buscarCategoriaServicio(Long.parseLong(rs.getString("ID_CATEGORIA")));
 			String descripcion = rs.getString("DESCRIPCIÓN");
 			double precioAdicional = Double.parseDouble(rs.getString("PRECIOADICIONAL"));
 			int inicioHorario = Integer.parseInt(rs.getString("INICIOHORARIO"));
@@ -103,15 +106,21 @@ public class DAOServicio {
 	}
 
 	public Servicio buscarServicio(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM SERVCIOS WHERE ID  ='" + id + "'";
+		String sql = "SELECT * FROM SERVICIOS WHERE ID  ='" + id + "'";
 
 		System.out.println("SQL stmt:" + sql);
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-
-		CategoriaServicio categoria = CategoriaServicio.valueOf(rs.getString("CATEGORÍA"));
+		
+		DAOCategoriaServicio daoCategoriaServicio = new DAOCategoriaServicio();
+		
+		daoCategoriaServicio.setConn(conn);
+		
+		
+		
+		CategoriaServicio categoria = daoCategoriaServicio.buscarCategoriaServicio(Long.parseLong(rs.getString("ID_CATEGORIA")));
 		String descripcion = rs.getString("DESCRIPCIÓN");
 		double precioAdicional = Double.parseDouble(rs.getString("PRECIOADICIONAL"));
 		int inicioHorario = Integer.parseInt(rs.getString("INICIOHORARIO"));

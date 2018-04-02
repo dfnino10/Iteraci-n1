@@ -30,17 +30,14 @@ public class Cliente {
 	@JsonProperty(value = "reservas")
 	private List<Reserva> reservas;
 
-	public enum Vinculo {
-		ESTUDIANTE, PROFESOR, PROFESOR_INVITADO, PADRE_DE_ESTUDIANTE, EMPLEADO, EGRESADO, INVITADO_A_EVENTO
-	}
-
 	@JsonProperty(value = "vinculo")
 	private Vinculo vinculo;
 
 	public Cliente(@JsonProperty(value = "id") long id, @JsonProperty(value = "identificacion") long identificacion,
 			@JsonProperty(value = "nombre") String nombre, @JsonProperty(value = "edad") int edad,
 			@JsonProperty(value = "direccion") String direccion, @JsonProperty(value = "vinculo") Vinculo vinculo,
-			@JsonProperty(value = "reservas") List<Reserva> reservas) {
+			@JsonProperty(value = "reservas") List<Reserva> reservas) 
+	{
 		this.id = id;
 		this.identificacion = identificacion;
 		this.nombre = nombre;

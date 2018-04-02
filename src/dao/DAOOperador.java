@@ -5,13 +5,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.sql.Date;
+
+import vos.CategoriaServicio;
 import vos.Espacio;
 import vos.Operador;
-import vos.Operador.CategoriaOperador;
+import vos.CategoriaOperador;
 import vos.RFC1;
 
 public class DAOOperador {
@@ -55,7 +57,9 @@ public class DAOOperador {
 			long documento = Long.parseLong(rs.getString("DOCUMENTO"));
 			String nombre = rs.getString("NOMBRE");
 			long registro = Integer.parseInt(rs.getString("REGISTRO"));
-			CategoriaOperador categoría = CategoriaOperador.valueOf(rs.getString("CATEGORÍA"));
+			DAOCategoriaOperador daoCategoriaOperador = new DAOCategoriaOperador();			
+			daoCategoriaOperador.setConn(conn);		
+			CategoriaOperador categoria = daoCategoriaOperador.buscarCategoriaOperador(Long.parseLong(rs.getString("ID_CATEGORIA")));			
 			DAOEspacio daoEspacio = new DAOEspacio();
 			daoEspacio.setConn(conn);
 
@@ -67,7 +71,7 @@ public class DAOOperador {
 				listaEspacio.add(daoEspacio.buscarEspacio(integer));
 			}
 
-			operadores.add(new Operador(id, registro, nombre, categoría, listaEspacio, documento));
+			operadores.add(new Operador(id, registro, nombre, categoria, listaEspacio, documento));
 		}
 		return operadores;
 	}
@@ -125,7 +129,9 @@ public class DAOOperador {
 		long documento = Long.parseLong(rs.getString("DOCUMENTO"));
 		String nombre = rs.getString("NOMBRE");
 		long registro = Long.parseLong(rs.getString("REGISTRO"));
-		CategoriaOperador categoria = CategoriaOperador.valueOf(rs.getString("CATEGORÍA"));
+		DAOCategoriaOperador daoCategoriaOperador = new DAOCategoriaOperador();			
+		daoCategoriaOperador.setConn(conn);		
+		CategoriaOperador categoria = daoCategoriaOperador.buscarCategoriaOperador(Long.parseLong(rs.getString("ID_CATEGORIA")));			
 		DAOEspacio daoEspacio = new DAOEspacio();
 		daoEspacio.setConn(conn);
 
@@ -159,9 +165,8 @@ public class DAOOperador {
 		Date ahora = new Date();
 		Date inicioAñoAnterior = new Date(ahora.getYear() - 1, 1, 1);
 		java.sql.Date inicioAñoAnteriorSQL = new java.sql.Date(ahora.getYear() - 1, 1, 1);
-
 		String sql = "SELECT ESPACIOS.IDOPERADOR AS ID, SUM(RESERVAS.PRECIO) AS INGRESOS FROM RESERVAS, ESPACIOS WHERE RESERVAS.IDESPACIO = ESPACIOS.ID AND RESERVAS.FECHAINICIO < "
-				+ inicioAñoAnteriorSQL + " GROUP BY ESPACIOS.IDOPERADOR";
+				+ "'01-01-2017'" + " GROUP BY ESPACIOS.IDOPERADOR";
 
 		System.out.println("SQL stmt:" + sql);
 

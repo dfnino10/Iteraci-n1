@@ -8,13 +8,10 @@ import org.codehaus.jackson.annotate.*;
  *         representa a las Habitaciones del modelo AlohAndes
  */
 
-public class Habitacion {
+public class Habitacion 
+{
 	@JsonProperty(value = "id")
 	private long id;
-
-	public enum CategoriaHabitacion {
-		ESTÁNDAR, SEMISUITE, SUITE
-	}
 
 	@JsonProperty(value = "categoria")
 	private CategoriaHabitacion categoria;

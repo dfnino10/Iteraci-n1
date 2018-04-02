@@ -6,6 +6,7 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -34,7 +35,7 @@ public class EspacioService {
 	@GET
 	@Path("/espaciospopulares")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getBoletas() {
+	public Response espaciosPopulares() {
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
 
 		try {

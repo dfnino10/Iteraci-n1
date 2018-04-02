@@ -125,7 +125,8 @@ public class DAOEspacio {
 		prepStmt.executeQuery();
 	}
 
-	public void deleteEspacio(Espacio espacio) throws SQLException, Exception {
+	public void deleteEspacio(Espacio espacio) throws SQLException, Exception 
+	{
 		String sql = "DELETE FROM ESPACIOS";
 		sql += " WHERE ID = " + espacio.getId();
 
@@ -137,7 +138,7 @@ public class DAOEspacio {
 	}
 
 	public Espacio buscarEspacio(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM ESPACIOS WHERE CATEGORIA_ID  ='" + id + "'";
+		String sql = "SELECT * FROM ESPACIOS WHERE ID  ='" + id + "'";
 
 		System.out.println("SQL stmt:" + sql);
 
