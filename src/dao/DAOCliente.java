@@ -58,7 +58,7 @@ public class DAOCliente {
 			DAOReserva daoReserva = new DAOReserva();
 			daoReserva.setConn(conn);
 
-			List<Reserva> reservas = daoReserva.buscarReservasIdCliente(id);
+			List<Long> reservas = daoReserva.buscarReservasIdCliente(id);
 
 			clientes.add(new Cliente(id, identificacion, nombre, edad, direccion, vinculo, reservas));
 		}
@@ -134,7 +134,7 @@ public class DAOCliente {
 		DAOReserva daoReserva = new DAOReserva();
 		daoReserva.setConn(conn);
 
-		List<Reserva> reservas = daoReserva.buscarReservasIdCliente(id);
+		List<Long> reservas = daoReserva.buscarReservasIdCliente(id);
 
 		return new Cliente(id, identificacion, nombre, edad, direccion, vinculo, reservas);
 	}

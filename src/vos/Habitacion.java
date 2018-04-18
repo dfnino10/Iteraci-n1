@@ -23,12 +23,12 @@ public class Habitacion
 	private int capacidad;
 
 	@JsonProperty(value = "espacio")
-	private Espacio espacio;
+	private long espacio;
 
 	public Habitacion(@JsonProperty(value = "id") long id,
 			@JsonProperty(value = "categoria") CategoriaHabitacion categoria,
 			@JsonProperty(value = "compartido") boolean compartido, @JsonProperty(value = "capacidad") int capacidad,
-			@JsonProperty(value = "espacio") Espacio espacio) {
+			@JsonProperty(value = "espacio") long espacio) {
 		this.id = id;
 		this.capacidad = capacidad;
 		this.categoria = categoria;
@@ -68,11 +68,11 @@ public class Habitacion
 		this.capacidad = capacidad;
 	}
 
-	public Espacio getEspacio() {
+	public long getEspacio() {
 		return espacio;
 	}
 
-	public void setEspacio(Espacio espacio) {
+	public void setEspacio(long espacio) {
 		this.espacio = espacio;
 	}
 }

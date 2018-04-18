@@ -59,7 +59,7 @@ public class DAOHabitacion {
 			CategoriaHabitacion categoria = daoCategoriaHabitacion.buscarCategoriaHabitacion(Long.parseLong(rs.getString("IDCATEGORIA")));			
 			DAOEspacio daoEspacio = new DAOEspacio();
 			daoEspacio.setConn(conn);
-			Espacio espacio = daoEspacio.buscarEspacio(daoEspacio.buscarEspacioIdHabitacion(id));
+			long espacio = daoEspacio.buscarEspacioIdHabitacion(id);
 
 			habitacions.add(new Habitacion(id, categoria, compartido, capacidad, espacio));
 		}
@@ -69,7 +69,7 @@ public class DAOHabitacion {
 	public void addHabitacion(Habitacion habitacion) throws SQLException, Exception {
 		String sql = "INSERT INTO HABITACIONES (id, idEspacio, idCategoria, capacidad, compartido) VALUES (";
 		sql += habitacion.getId() + ",";
-		sql += habitacion.getEspacio().getId() + ",";
+		sql += habitacion.getEspacio() + ",";
 		sql += habitacion.getCategoria().getId() + ",";
 		sql += habitacion.getCapacidad() + ",";
 		char comp;
@@ -90,7 +90,7 @@ public class DAOHabitacion {
 
 	public void updateHabitacion(Habitacion habitacion) throws SQLException, Exception {
 		String sql = "UPDATE HABITACIONES SET ";
-		sql += "idEspacio = " + habitacion.getEspacio().getId() + ",";
+		sql += "idEspacio = " + habitacion.getEspacio() + ",";
 		sql += "idEategoria = " + habitacion.getCategoria().getId() + ",";
 		sql += "capacidad = " + habitacion.getCapacidad() + ",";
 		char comp;
@@ -144,7 +144,7 @@ public class DAOHabitacion {
 		CategoriaHabitacion categoria = daoCategoriaHabitacion.buscarCategoriaHabitacion(Long.parseLong(rs.getString("IDCATEGORIA")));			
 		DAOEspacio daoEspacio = new DAOEspacio();
 		daoEspacio.setConn(conn);
-		Espacio espacio = daoEspacio.buscarEspacio(daoEspacio.buscarEspacioIdHabitacion(id));
+		long espacio = daoEspacio.buscarEspacioIdHabitacion(id);
 
 		return new Habitacion(id, categoria, compartido, capacidad, espacio);
 	}

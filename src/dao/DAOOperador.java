@@ -62,15 +62,9 @@ public class DAOOperador {
 			DAOEspacio daoEspacio = new DAOEspacio();
 			daoEspacio.setConn(conn);
 
-			List<Integer> lista = daoEspacio.buscarEspaciosIdOperador(id);
+			List<Long> espacios = daoEspacio.buscarEspaciosIdOperador(id);
 
-			ArrayList<Espacio> listaEspacio = new ArrayList<>();
-
-			for (Integer integer : lista) {
-				listaEspacio.add(daoEspacio.buscarEspacio(integer));
-			}
-
-			operadores.add(new Operador(id, registro, nombre, categoria, listaEspacio, documento));
+			operadores.add(new Operador(id, registro, nombre, categoria, espacios, documento));
 		}
 		return operadores;
 	}
@@ -140,18 +134,12 @@ public class DAOOperador {
 		DAOEspacio daoEspacio = new DAOEspacio();
 		daoEspacio.setConn(conn);
 
-		List<Integer> lista = daoEspacio.buscarEspaciosIdOperador(id);
+		List<Long> espacios = daoEspacio.buscarEspaciosIdOperador(id);
 
-		ArrayList<Espacio> listaEspacio = new ArrayList<>();
-
-		for (Integer integer : lista) {
-			listaEspacio.add(daoEspacio.buscarEspacio(integer));
-		}
-
-		return new Operador(id, registro, nombre, categoria, listaEspacio, documento);
+		return new Operador(id, registro, nombre, categoria, espacios, documento);
 	}
 
-	public Operador buscarOperadorIdEspacio(long id) throws SQLException, Exception {
+	public long buscarOperadorIdEspacio(long id) throws SQLException, Exception {
 		String sql = "SELECT * FROM ESPACIOS WHERE ID  =" + id ;
 
 		System.out.println("SQL stmt:" + sql);
@@ -166,7 +154,7 @@ public class DAOOperador {
 		}
 		
 		Long idOperador = Long.parseLong(rs.getString("IDOPERADOR"));
-		return buscarOperador(idOperador);
+		return idOperador;
 	}
 
 	// RFC1

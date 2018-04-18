@@ -58,7 +58,7 @@ public class DAOServicio {
 			int finHorario = Integer.parseInt(rs.getString("FINHORARIO"));
 			DAOEspacio daoEspacio = new DAOEspacio();
 			daoEspacio.setConn(conn);
-			Espacio espacio = daoEspacio.buscarEspacio(Long.parseLong(rs.getString("IDESPACIO")));
+			long espacio = Long.parseLong(rs.getString("IDESPACIO"));
 
 			servicios.add(new Servicio(id, categoria, descripcion, precioAdicional, inicioHorario, finHorario, espacio));
 		}
@@ -68,7 +68,7 @@ public class DAOServicio {
 	public void addServicio(Servicio servicio) throws SQLException, Exception {
 		String sql = "INSERT INTO SERVICIOS (id, idEspacio, idCategoria, descripcion, precioAdicional, inicioHorario, finHorario) VALUES (";
 		sql += servicio.getId() + ",";
-		sql += servicio.getEspacio().getId() + ",";
+		sql += servicio.getEspacio() + ",";
 		sql += servicio.getCategoria().getId() + ",";		
 		sql += servicio.getDescripcion() + ",";
 		sql += servicio.getPrecioAdicional() + ",";
@@ -84,7 +84,7 @@ public class DAOServicio {
 
 	public void updateServicio(Servicio servicio) throws SQLException, Exception {
 		String sql = "UPDATE SERVICIOS SET ";
-		sql += "idEspacio = " + servicio.getEspacio().getId() + ",";
+		sql += "idEspacio = " + servicio.getEspacio() + ",";
 		sql += "idCategoria = " + servicio.getCategoria().getId() + ",";		
 		sql += "descripcion = " + servicio.getDescripcion() + ",";
 		sql += "precioAdicional = " + servicio.getPrecioAdicional() + ",";
@@ -136,15 +136,15 @@ public class DAOServicio {
 		
 		DAOEspacio daoEspacio = new DAOEspacio();
 		daoEspacio.setConn(conn);
-		Espacio espacio = daoEspacio.buscarEspacio(Long.parseLong(rs.getString("IDESPACIO")));
+		long espacio = Long.parseLong(rs.getString("IDESPACIO"));
 
 		return new Servicio(id, categoria, descripcion, precioAdicional, inicioHorario, finHorario, espacio);
 	}
 
-	public List<Servicio> buscarServiciosIdEspacio(long id) throws SQLException, Exception {
+	public List<Long> buscarServiciosIdEspacio(long id) throws SQLException, Exception {
 		String sql = "SELECT * FROM SERVICIOS WHERE IDESPACIO =" + id;
 
-		ArrayList<Servicio> servicios = new ArrayList<Servicio>();
+		ArrayList<Long> servicios = new ArrayList<Long>();
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -155,7 +155,7 @@ public class DAOServicio {
 		while (rs.next()) {
 			long idS = Long.parseLong(rs.getString("ID"));
 
-			servicios.add(buscarServicio(idS));
+			servicios.add(idS);
 		}
 		return servicios;
 

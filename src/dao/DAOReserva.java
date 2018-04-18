@@ -91,8 +91,8 @@ public class DAOReserva {
 		sql += cancelado + ")";
 		
 
-		cliente.getReservas().add(reserva);
-		espacio.getReservas().add(reserva);
+		cliente.getReservas().add(reserva.getIdEspacio());
+		espacio.getReservas().add(reserva.getIdCliente());
 		daoCliente.updateCliente(cliente);
 		daoEspacio.updateEspacio(espacio);
 
@@ -173,9 +173,9 @@ public class DAOReserva {
 		return new Reserva(idCliente, idEspacio, fechaInicio, duracion, fechaReserva, cancelado, precio);
 	}
 
-	public ArrayList<Reserva> buscarReservasIdCliente(long idCliente) throws SQLException, Exception {
+	public ArrayList<Long> buscarReservasIdCliente(long idCliente) throws SQLException, Exception {
 
-		ArrayList<Reserva> reservas = new ArrayList<Reserva>();
+		ArrayList<Long> reservas = new ArrayList<Long>();
 
 		String sql = "SELECT * FROM RESERVAS WHERE IDCLIENTE = " + idCliente;
 
@@ -187,15 +187,14 @@ public class DAOReserva {
 
 		while (rs.next()) {
 			long idEspacio = Long.parseLong(rs.getString("IDESPACIO"));
-
-			reservas.add(buscarReserva(idCliente, idEspacio));
+			reservas.add(idEspacio);
 		}
 		return reservas;
 	}
 
-	public ArrayList<Reserva> buscarReservasIdEspacio(long idEspacio) throws SQLException, Exception {
+	public ArrayList<Long> buscarReservasIdEspacio(long idEspacio) throws SQLException, Exception {
 
-		ArrayList<Reserva> reservas = new ArrayList<Reserva>();
+		ArrayList<Long> reservas = new ArrayList<Long>();
 
 		String sql = "SELECT * FROM RESERVAS WHERE IDESPACIO = " + idEspacio;
 
@@ -208,7 +207,7 @@ public class DAOReserva {
 		while (rs.next()) {
 			long idCliente = Long.parseLong(rs.getString("IDCLIENTE"));
 
-			reservas.add(buscarReserva(idCliente, idEspacio));
+			reservas.add(idCliente);
 		}
 		return reservas;
 	}

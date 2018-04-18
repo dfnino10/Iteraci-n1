@@ -69,6 +69,7 @@ public class AlohAndesTransactionManager
 		DAOReserva daoReserva = new DAOReserva();
 		DAOCliente daoCliente = new DAOCliente();
 		DAOEspacio daoEspacio = new DAOEspacio();
+		DAOOperador daoOperador = new DAOOperador();
 
 		try {
 			////// Transacción
@@ -76,6 +77,7 @@ public class AlohAndesTransactionManager
 			daoReserva.setConn(conn);
 			daoCliente.setConn(conn);
 			daoEspacio.setConn(conn);
+			daoOperador.setConn(conn);
 
 			Cliente cliente = null;
 			Espacio espacio = null;
@@ -94,8 +96,8 @@ public class AlohAndesTransactionManager
 				throw new Exception("La reserva debe iniciar después que la fecha actual");
 			}
 
-			if (espacio.getOperador().getCategoria().getCategoria().toUpperCase().equals("MIEMBRO_DE_LA_COMUNIDAD")
-					|| espacio.getOperador().getCategoria().getCategoria().toUpperCase().equals("PERSONA_NATURAL")) {
+			if (daoOperador.buscarOperador(espacio.getOperador()).getCategoria().getCategoria().toUpperCase().equals("MIEMBRO_DE_LA_COMUNIDAD")
+					|| daoOperador.buscarOperador(espacio.getOperador()).getCategoria().getCategoria().toUpperCase().equals("PERSONA_NATURAL")) {
 				if (reserva.getDuracion() <= 30) {
 					throw new Exception(
 							"La reserva tiene que durar mínimo 30 días si se quiere reservar un espacio de ese operador");
@@ -106,14 +108,30 @@ public class AlohAndesTransactionManager
 				throw new Exception("La nueva reserva excediría la capacidad del espacio a reservar");
 			}
 
-			if (espacio.getOperador().getCategoria().getCategoria().toUpperCase().equals("VIVIENDA_UNIVERSITARIA")
+			if (daoOperador.buscarOperador(espacio.getOperador()).getCategoria().getCategoria().toUpperCase().equals("VIVIENDA_UNIVERSITARIA")
 					&& (cliente.getVinculo().getVinculo().toUpperCase().equals("ESTUDIANTE") || cliente.getVinculo().getVinculo().toUpperCase().equals("PROFESOR")
 							|| cliente.getVinculo().getVinculo().toUpperCase().equals("EMPLEADO")
 							|| cliente.getVinculo().getVinculo().toUpperCase().equals("PROFESOR_INVITADO"))) {
 				throw new Exception("Sólo estudiantes, profesores y empleados pueden usar vivienda universitaria");
 			}
-
-			if (cliente.reservaHoy(reserva.getFechaReserva())) {
+			
+			List<Long> reservasId = daoReserva.buscarReservasIdCliente(cliente.getId());
+			
+			List<Reserva> reservas = new ArrayList<Reserva>();
+			
+			for(long id : reservasId)
+			{
+				reservas.add(daoReserva.buscarReserva(cliente.getId(), id));
+			}
+			
+			boolean resHoy = false;
+			for (Reserva r : reservas) {
+				if (r.getFechaReserva().equals(fecha))
+					;
+				resHoy = true;
+			}
+			
+			if (resHoy) {
 				throw new Exception("No puede hacerse más de una resrva al día");
 			}
 
@@ -233,7 +251,7 @@ public class AlohAndesTransactionManager
 			daoEspacio.setConn(conn);
 
 			Operador operador = null;
-			List<Reserva> reservas = null;
+			List<Reserva> reservas = new ArrayList<Reserva>();
 
 			try {
 				espacio = daoEspacio.buscarEspacio(espacio.getId());
@@ -241,8 +259,12 @@ public class AlohAndesTransactionManager
 				throw new Exception("No hay espacio con dicho id para poder cancelarlo.");
 			}
 			try {
-				operador = daoOperador.buscarOperador(espacio.getOperador().getId());
-				reservas = daoEspacio.buscarEspacio(espacio.getId()).getReservas();
+				operador = daoOperador.buscarOperador(espacio.getOperador());
+				List<Long> reservasId = daoReserva.buscarReservasIdEspacio(espacio.getId());
+				for(long id : reservasId)
+				{
+					reservas.add(daoReserva.buscarReserva(id, espacio.getId()));
+				}
 			} catch (Exception e) {
 				System.err.println(e.getMessage());
 				e.printStackTrace();

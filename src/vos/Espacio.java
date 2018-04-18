@@ -34,24 +34,24 @@ public class Espacio {
 	private Date fechaRetiro;
 
 	@JsonProperty(value = "operador")
-	private Operador operador;
+	private long operador;
 
 	@JsonProperty(value = "reservas")
-	private List<Reserva> reservas;
+	private List<Long> reservas;
 
 	@JsonProperty(value = "servicios")
-	private List<Servicio> servicios;
+	private List<Long> servicios;
 
 	@JsonProperty(value = "habitaciones")
-	private List<Habitacion> habitaciones;
+	private List<Long> habitaciones;
 
 	public Espacio(@JsonProperty(value = "id") long id, @JsonProperty(value = "registro") long registro,
 			@JsonProperty(value = "capacidad") int capacidad, @JsonProperty(value = "tamaño") double tamaño,
 			@JsonProperty(value = "ubicacion") String ubicacion, @JsonProperty(value = "precio") double precio,
-			@JsonProperty(value = "fechaRetiro") Date fechaRetiro, @JsonProperty(value = "operador") Operador operador,
-			@JsonProperty(value = "reservas") List<Reserva> reservas,
-			@JsonProperty(value = "servicios") List<Servicio> servicios,
-			@JsonProperty(value = "habitaciones") List<Habitacion> habitaciones) {
+			@JsonProperty(value = "fechaRetiro") Date fechaRetiro, @JsonProperty(value = "operador") long operador,
+			@JsonProperty(value = "reservas") List<Long> reservas,
+			@JsonProperty(value = "servicios") List<Long> servicios,
+			@JsonProperty(value = "habitaciones") List<Long> habitaciones) {
 		this.id = id;
 		this.registro = registro;
 		this.capacidad = capacidad;
@@ -121,35 +121,35 @@ public class Espacio {
 		this.fechaRetiro = fechaCancelacion;
 	}
 
-	public Operador getOperador() {
+	public long getOperador() {
 		return operador;
 	}
 
-	public void setOperador(Operador operador) {
+	public void setOperador(long operador) {
 		this.operador = operador;
 	}
 
-	public List<Reserva> getReservas() {
+	public List<Long> getReservas() {
 		return reservas;
 	}
 
-	public void setReservas(List<Reserva> reservas) {
+	public void setReservas(List<Long> reservas) {
 		this.reservas = reservas;
 	}
 
-	public List<Servicio> getServicios() {
+	public List<Long> getServicios() {
 		return servicios;
 	}
 
-	public void setServicios(List<Servicio> servicios) {
+	public void setServicios(List<Long> servicios) {
 		this.servicios = servicios;
 	}
 
-	public List<Habitacion> getHabitaciones() {
+	public List<Long> getHabitaciones() {
 		return habitaciones;
 	}
 
-	public void setHabitaciones(List<Habitacion> habitaciones) {
+	public void setHabitaciones(List<Long> habitaciones) {
 		this.habitaciones = habitaciones;
 	}
 

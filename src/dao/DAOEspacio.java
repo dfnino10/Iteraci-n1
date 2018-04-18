@@ -62,28 +62,22 @@ public class DAOEspacio {
 			DAOHabitacion daoHabitacion = new DAOHabitacion();
 			daoHabitacion.setConn(conn);
 
-			List<Long> habitacionesId = daoHabitacion.buscarHabitacionesIdEspacio(id);
-
-			List<Habitacion> habitaciones = new ArrayList<Habitacion>();
-
-			for (Long hId : habitacionesId) {
-				habitaciones.add(daoHabitacion.buscarHabitacion(hId));
-			}
+			List<Long> habitaciones = daoHabitacion.buscarHabitacionesIdEspacio(id);
 
 			DAOReserva daoReserva = new DAOReserva();
 			daoReserva.setConn(conn);
 
-			List<Reserva> reservas = daoReserva.buscarReservasIdEspacio(id);
+			List<Long> reservas = daoReserva.buscarReservasIdEspacio(id);
 
 			DAOOperador daoOperador = new DAOOperador();
 			daoOperador.setConn(conn);
 
-			Operador operador = daoOperador.buscarOperadorIdEspacio(id);
+			long operador = daoOperador.buscarOperadorIdEspacio(id);
 
 			DAOServicio daoServicio = new DAOServicio();
 			daoServicio.setConn(conn);
 
-			List<Servicio> servicios = daoServicio.buscarServiciosIdEspacio(id);
+			List<Long> servicios = daoServicio.buscarServiciosIdEspacio(id);
 
 			espacios.add(new Espacio(id, registro, capacidad, tamaño, ubicacion, precio, fechaRetiro, operador,
 					reservas, servicios, habitaciones));
@@ -94,7 +88,7 @@ public class DAOEspacio {
 	public void addEspacio(Espacio espacio) throws SQLException, Exception {
 		String sql = "INSERT INTO ESPACIOS (ID, IDOPERADOR, CAPACIDAD, REGISTRO, TAMAÑO, DIRECCION, PRECIO, FECHARETIRO) VALUES( ";
 		sql += espacio.getId() + ",";
-		sql += espacio.getOperador().getId() + ",";
+		sql += espacio.getOperador() + ",";
 		sql += espacio.getCapacidad() + ",";
 		sql += espacio.getRegistro() + ",";
 		sql += espacio.getTamaño() + ",";
@@ -113,7 +107,7 @@ public class DAOEspacio {
 
 	public void updateEspacio(Espacio espacio) throws SQLException, Exception {
 		String sql = "UPDATE ESPACIOS SET ";
-		sql += "idOperador = " + espacio.getOperador().getId() + ",";
+		sql += "idOperador = " + espacio.getOperador() + ",";
 		sql += "capacidad = " + espacio.getCapacidad() + ",";
 		sql += "registro = " + espacio.getRegistro() + ",";
 		sql += "tamaño = " + espacio.getTamaño() + ",";
@@ -166,35 +160,29 @@ public class DAOEspacio {
 		DAOHabitacion daoHabitacion = new DAOHabitacion();
 		daoHabitacion.setConn(conn);
 
-		List<Long> habitacionesId = daoHabitacion.buscarHabitacionesIdEspacio(id);
-
-		List<Habitacion> habitaciones = new ArrayList<Habitacion>();
-
-		for (Long hId : habitacionesId) {
-			habitaciones.add(daoHabitacion.buscarHabitacion(hId));
-		}
+		List<Long> habitaciones = daoHabitacion.buscarHabitacionesIdEspacio(id);
 
 		DAOReserva daoReserva = new DAOReserva();
 		daoReserva.setConn(conn);
 
-		List<Reserva> reservas = daoReserva.buscarReservasIdEspacio(id);
+		List<Long> reservas = daoReserva.buscarReservasIdEspacio(id);
 
 		DAOOperador daoOperador = new DAOOperador();
 		daoOperador.setConn(conn);
 
-		Operador operador = daoOperador.buscarOperadorIdEspacio(id);
+		long operador = daoOperador.buscarOperadorIdEspacio(id);
 
 		DAOServicio daoServicio = new DAOServicio();
 		daoServicio.setConn(conn);
 
-		List<Servicio> servicios = daoServicio.buscarServiciosIdEspacio(id);
+		List<Long> servicios = daoServicio.buscarServiciosIdEspacio(id);
 
 		return new Espacio(id, registro, capacidad, tamaño, ubicacion, precio, fechaRetiro, operador, reservas,
 				servicios, habitaciones);
 	}
 
-	public ArrayList<Integer> buscarEspaciosIdOperador(long pId) throws SQLException, Exception {
-		ArrayList<Integer> espacios = new ArrayList<Integer>();
+	public ArrayList<Long> buscarEspaciosIdOperador(long pId) throws SQLException, Exception {
+		ArrayList<Long> espacios = new ArrayList<Long>();
 
 		String sql = "SELECT * FROM ESPACIOS WHERE IDOPERADOR = " + pId;
 
@@ -205,7 +193,7 @@ public class DAOEspacio {
 		ResultSet rs = prepStmt.executeQuery();
 		
 		while (rs.next()) {
-			int id = Integer.parseInt(rs.getString("ID"));
+			long id = Integer.parseInt(rs.getString("ID"));
 			espacios.add(id);
 		}
 		return espacios;
@@ -231,7 +219,7 @@ public class DAOEspacio {
 		return espacios;
 	}
 
-	public int buscarEspacioIdHabitacion(long pId) throws SQLException, Exception {
+	public long buscarEspacioIdHabitacion(long pId) throws SQLException, Exception {
 		String sql = "SELECT * FROM HABITACIONES WHERE ID = " + pId;
 
 		System.out.println("SQL stmt:" + sql);
@@ -269,7 +257,7 @@ public class DAOEspacio {
 			Espacio resultante = buscarEspacio(id);
 			espacios.add(resultante);
 		}
-
+		
 		return espacios;
 	}
 }
