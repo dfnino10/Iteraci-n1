@@ -26,18 +26,23 @@ public class Servicio {
 
 	@JsonProperty(value = "finHorario")
 	private int finHorario;
+	
+	@JsonProperty(value = "espacio")
+	private Espacio espacio;
 
 	public Servicio(@JsonProperty(value = "id") long id, @JsonProperty(value = "categoria") CategoriaServicio categoria,
 			@JsonProperty(value = "descripcion") String descripcion,
 			@JsonProperty(value = "precioAdicional") double precioAdicional,
 			@JsonProperty(value = "inicioHorario") int inicioHorario,
-			@JsonProperty(value = "finHorario") int finHorario) {
+			@JsonProperty(value = "finHorario") int finHorario,
+			@JsonProperty(value = "espacio") Espacio espacio) {
 		this.id = id;
 		this.categoria = categoria;
 		this.descripcion = descripcion;
 		this.precioAdicional = precioAdicional;
 		this.inicioHorario = inicioHorario;
 		this.finHorario = finHorario;
+		this.espacio = espacio;
 	}
 
 	public long getId() {
@@ -86,5 +91,13 @@ public class Servicio {
 
 	public void setFinHorario(int finHorario) {
 		this.finHorario = finHorario;
+	}
+	
+	public Espacio getEspacio() {
+		return espacio;
+	}
+
+	public void setEspacio(Espacio espacio) {
+		this.espacio = espacio;
 	}
 }

@@ -45,7 +45,6 @@ public class DAOReserva {
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-		System.out.println(rs.next());
 
 		while (rs.next()) {
 			long idCliente = Long.parseLong(rs.getString("IDCLIENTE"));
@@ -53,8 +52,8 @@ public class DAOReserva {
 			Date fechaInicio = Date.valueOf(rs.getString("FECHAINICIO"));
 			int duracion = Integer.parseInt(rs.getString("DURACION"));
 			Date fechaReserva = Date.valueOf(rs.getString("FECHARESERVA"));
-			boolean cancelado = false;
 			double precio = Double.parseDouble(rs.getString("PRECIO"));
+			boolean cancelado = false;
 			if (rs.getString("CANCELADO").equals('Y')) {
 				cancelado = true;
 			}
@@ -65,12 +64,12 @@ public class DAOReserva {
 
 	public void addReserva(Reserva reserva) throws SQLException, Exception
 	{
-		String sql = "INSERT INTO RESERVAS VALUES (";
-		sql += "idCliente = " + reserva.getIdCliente() + ",";
-		sql += "idEspacio = " + reserva.getIdEspacio() + ",";
-		sql += "duracion = " + reserva.getDuracion() + ",";
-		sql += "fechaInicio = " + reserva.getFechaInicio().toString() + ",";
-		sql += "fechaReserva = " + reserva.getFechaReserva().toString() + ",";
+		String sql = "INSERT INTO RESERVAS (idCliente, idEspacio, duracion, fechaInicio, fechaReserva, precio, cancelado) VALUES (";
+		sql += reserva.getIdCliente() + ",";
+		sql += reserva.getIdEspacio() + ",";
+		sql += reserva.getDuracion() + ",";
+		sql += "TO_DATE('"+reserva.getFechaInicio().getDay() + "-" + reserva.getFechaInicio().getMonth() +"-" +reserva.getFechaInicio().getYear()   + "','DD-MM-YYYY'),";
+		sql += "TO_DATE('"+reserva.getFechaReserva().getDay() + "-" + reserva.getFechaReserva().getMonth() +"-" +reserva.getFechaReserva().getYear()   + "','DD-MM-YYYY'),";
 
 		DAOCliente daoCliente = new DAOCliente();
 		DAOEspacio daoEspacio = new DAOEspacio();
@@ -88,9 +87,9 @@ public class DAOReserva {
 		if (reserva.isCancelado()) {
 			cancelado = 'Y';
 		}
-
-		sql += "cancelado = " + cancelado + ",";
-		sql += "precio = " + reserva.getPrecio() + ")";
+		sql += reserva.getPrecio() + ",";
+		sql += cancelado + ")";
+		
 
 		cliente.getReservas().add(reserva);
 		espacio.getReservas().add(reserva);
@@ -106,11 +105,9 @@ public class DAOReserva {
 
 	public void updateReserva(Reserva reserva) throws SQLException, Exception {
 		String sql = "UPDATE RESERVAS SET ";
-		sql += "idCliente = " + reserva.getIdCliente() + ",";
-		sql += "idEspacio = " + reserva.getIdEspacio() + ",";
 		sql += "duracion = " + reserva.getDuracion() + ",";
-		sql += "fechaInicio = " + reserva.getFechaInicio().toString() + ",";
-		sql += "fechaReserva = " + reserva.getFechaReserva().toString() + ",";
+		sql += "fechaInicio = TO_DATE('"+reserva.getFechaInicio().getDay() + "-" + reserva.getFechaInicio().getMonth() +"-" +reserva.getFechaInicio().getYear()   + "','DD-MM-YYYY'),";
+		sql += "fechaReserva = TO_DATE('"+reserva.getFechaReserva().getDay() + "-" + reserva.getFechaReserva().getMonth() +"-" +reserva.getFechaReserva().getYear()   + "','DD-MM-YYYY'),";
 
 		DAOCliente daoCliente = new DAOCliente();
 		DAOEspacio daoEspacio = new DAOEspacio();
@@ -128,12 +125,8 @@ public class DAOReserva {
 		if (reserva.isCancelado()) {
 			cancelado = 'Y';
 		}
-
-		if (!buscarReserva(reserva.getIdCliente(), reserva.getIdEspacio()).isCancelado()) {
-			sql += "cancelado = " + cancelado + ",";
-		}
-
 		sql += "precio = " + reserva.getPrecio() + ",";
+		sql += "cancelado = " + cancelado;
 		sql += " WHERE IDCLIENTE = " + reserva.getIdCliente() + " AND IDESPACIO = " + reserva.getIdEspacio();
 
 		System.out.println("SQL stmt:" + sql);
@@ -162,7 +155,12 @@ public class DAOReserva {
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-
+		
+		if(!rs.next())
+		{
+			throw new Exception ("No se encontró ninguna reserva con el idCliente = "+idCliente + " y con idEspacio = " + idEspacio);
+		}
+		
 		Date fechaInicio = Date.valueOf(rs.getString("FECHAINICIO"));
 		int duracion = Integer.parseInt(rs.getString("DURACION"));
 		Date fechaReserva = Date.valueOf(rs.getString("FECHARESERVA"));

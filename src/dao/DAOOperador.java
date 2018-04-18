@@ -50,7 +50,6 @@ public class DAOOperador {
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-		System.out.println(rs.next());
 
 		while (rs.next()) {
 			long id = Long.parseLong(rs.getString("ID"));
@@ -59,7 +58,7 @@ public class DAOOperador {
 			long registro = Integer.parseInt(rs.getString("REGISTRO"));
 			DAOCategoriaOperador daoCategoriaOperador = new DAOCategoriaOperador();			
 			daoCategoriaOperador.setConn(conn);		
-			CategoriaOperador categoria = daoCategoriaOperador.buscarCategoriaOperador(Long.parseLong(rs.getString("ID_CATEGORIA")));			
+			CategoriaOperador categoria = daoCategoriaOperador.buscarCategoriaOperador(Long.parseLong(rs.getString("IDCATEGORIA")));			
 			DAOEspacio daoEspacio = new DAOEspacio();
 			daoEspacio.setConn(conn);
 
@@ -77,12 +76,13 @@ public class DAOOperador {
 	}
 
 	public void addOperador(Operador operador) throws SQLException, Exception {
-		String sql = "INSERT INTO OPERADORES VALUES (";
-		sql += "id = " + operador.getId() + ",";
-		sql += "documento = " + operador.getDocumento() + ",";
-		sql += "nombre = " + operador.getNombre() + ",";
-		sql += "registro = " + operador.getRegistro() + ",";
-		sql += "categoría = " + operador.getCategoria().toString() + ")";
+		String sql = "INSERT INTO OPERADORES (id, idCategoria, nombre, registro, documento) VALUES (";
+		sql += operador.getId() + ",";
+		sql += operador.getCategoria().getId() + ",";
+		sql += operador.getNombre() + ",";
+		sql += operador.getRegistro() + ",";
+		sql += operador.getDocumento() + ")";
+		
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -96,7 +96,7 @@ public class DAOOperador {
 		sql += "documento = " + operador.getDocumento() + ",";
 		sql += "nombre = " + operador.getNombre() + ",";
 		sql += "registro = " + operador.getRegistro() + ",";
-		sql += "categoría = " + operador.getCategoria().toString() + ",";
+		sql += "idCategoria = " + operador.getCategoria().getId();
 		sql += " WHERE ID = " + operador.getId();
 
 		System.out.println("SQL stmt:" + sql);
@@ -118,20 +118,25 @@ public class DAOOperador {
 	}
 
 	public Operador buscarOperador(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM OPERADORES WHERE ID  ='" + id + "'";
+		String sql = "SELECT * FROM OPERADORES WHERE ID = " + id ;
 
 		System.out.println("SQL stmt:" + sql);
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-
+		
+		if(!rs.next())
+		{
+			throw new Exception ("No se encontró ningún operador con el id = "+id);
+		}
+		
 		long documento = Long.parseLong(rs.getString("DOCUMENTO"));
 		String nombre = rs.getString("NOMBRE");
 		long registro = Long.parseLong(rs.getString("REGISTRO"));
 		DAOCategoriaOperador daoCategoriaOperador = new DAOCategoriaOperador();			
 		daoCategoriaOperador.setConn(conn);		
-		CategoriaOperador categoria = daoCategoriaOperador.buscarCategoriaOperador(Long.parseLong(rs.getString("ID_CATEGORIA")));			
+		CategoriaOperador categoria = daoCategoriaOperador.buscarCategoriaOperador(Long.parseLong(rs.getString("IDCATEGORIA")));			
 		DAOEspacio daoEspacio = new DAOEspacio();
 		daoEspacio.setConn(conn);
 
@@ -147,14 +152,19 @@ public class DAOOperador {
 	}
 
 	public Operador buscarOperadorIdEspacio(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM ESPACIOS WHERE ID  ='" + id + "'";
+		String sql = "SELECT * FROM ESPACIOS WHERE ID  =" + id ;
 
 		System.out.println("SQL stmt:" + sql);
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-
+		
+		if(!rs.next())
+		{
+			throw new Exception ("No se encontró ningun operador con el espacio que tiene id = "+id);
+		}
+		
 		Long idOperador = Long.parseLong(rs.getString("IDOPERADOR"));
 		return buscarOperador(idOperador);
 	}
@@ -162,19 +172,15 @@ public class DAOOperador {
 	// RFC1
 
 	public List<RFC1> obtenerIngresosOperadores() throws SQLException, Exception {
-		Date ahora = new Date();
-		Date inicioAñoAnterior = new Date(ahora.getYear() - 1, 1, 1);
-		java.sql.Date inicioAñoAnteriorSQL = new java.sql.Date(ahora.getYear() - 1, 1, 1);
+
 		String sql = "SELECT ESPACIOS.IDOPERADOR AS ID, SUM(RESERVAS.PRECIO) AS INGRESOS FROM RESERVAS, ESPACIOS WHERE RESERVAS.IDESPACIO = ESPACIOS.ID AND RESERVAS.FECHAINICIO < "
-				+ "'01-01-2017'" + " GROUP BY ESPACIOS.IDOPERADOR";
+				+ " TO_DATE('01-01-2017','DD-MM-YYYY')" + " GROUP BY ESPACIOS.IDOPERADOR";
 
 		System.out.println("SQL stmt:" + sql);
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-
-		System.out.println(rs.next());
 
 		List<RFC1> ingresos = new ArrayList<RFC1>();
 

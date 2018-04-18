@@ -44,12 +44,11 @@ public class DAOVinculo
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-		System.out.println(rs.next());
 
 		while (rs.next()) {
 			long id = Long.parseLong(rs.getString("ID"));
 			String categoria = rs.getString("CATEGORIA");
-			String descripcion = rs.getString("DESCRIPCIÓN");
+			String descripcion = rs.getString("DESCRIPCION");
 
 			categoriasCliente.add(new Vinculo(id, categoria, descripcion));
 		}
@@ -59,7 +58,7 @@ public class DAOVinculo
 	public void addVinculo(Vinculo vinculo) throws SQLException, Exception {
 		String sql = "INSERT INTO VINCULOS VALUES (";
 		sql += "ID = " + vinculo.getId() + ",";
-		sql += "CATEGORIA= " + vinculo.getVinculo() + ",";
+		sql += "NOMBRE= " + vinculo.getVinculo() + ",";
 		sql += "DESCRIPCION = " + vinculo.getDescripcion() + ")";		
 
 		System.out.println("SQL stmt:" + sql);
@@ -72,7 +71,7 @@ public class DAOVinculo
 	public void updateVinculo(Vinculo vinculo) throws SQLException, Exception {
 		String sql = "UPDATE VINCULOS SET ";
 		sql += "ID = " + vinculo.getId() + ",";
-		sql += "CATEGORIA= " + vinculo.getVinculo() + ",";
+		sql += "NOMBRE= " + vinculo.getVinculo() + ",";
 		sql += "DESCRIPCION = " + vinculo.getDescripcion() + ")";		
 
 		System.out.println("SQL stmt:" + sql);
@@ -101,9 +100,14 @@ public class DAOVinculo
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-
-		String categoria = rs.getString("CATEGORIA");
-		String descripcion = rs.getString("DESCRIPCIÓN");
+		
+		if(!rs.next())
+		{
+			throw new Exception ("No se encontró ningún vínculo con el id = "+id);
+		}
+		
+		String categoria = rs.getString("NOMBRE");
+		String descripcion = rs.getString("DESCRIPCION");
 
 		return new Vinculo(id, categoria, descripcion);
 	}
