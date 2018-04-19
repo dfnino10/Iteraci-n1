@@ -1,6 +1,7 @@
 package vos;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.*;
@@ -12,6 +13,10 @@ import org.codehaus.jackson.annotate.*;
  */
 
 public class Reserva {
+	
+	@JsonProperty(value = "id")
+	private long id;
+	
 	@JsonProperty(value = "idCliente")
 	private long idCliente;
 
@@ -37,10 +42,11 @@ public class Reserva {
 	@JsonProperty(value = "precio")
 	private double precio;
 
-	public Reserva(@JsonProperty(value = "idCliente") long idCliente, @JsonProperty(value = "idEspacio") long idEspacio,
+	public Reserva(@JsonProperty(value = "id") long id, @JsonProperty(value = "idCliente") long idCliente, @JsonProperty(value = "idEspacio") long idEspacio,
 			@JsonProperty(value = "fechaInicio") String fechaInicio, @JsonProperty(value = "duracion") int duracion,
 			@JsonProperty(value = "fechaReserva") String fechaReserva,
 			@JsonProperty(value = "cancelado") boolean cancelado, @JsonProperty(value = "precio") double precio) {
+		this.id = id;
 		this.idCliente = idCliente;
 		this.idEspacio = idEspacio;
 		this.fechaInicio = fechaInicio;
@@ -68,6 +74,14 @@ public class Reserva {
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public long getId() {
+		return id;
+	}
+	
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public double getPrecio() {
@@ -144,36 +158,27 @@ public class Reserva {
 		this.duracion = duracion;
 	}
 
-	public Date calcularFechaFin() {
-		Date fechaFin = new Date();
-		int meses = 0;
-		if (duracion / 30 > 0) {
-			meses = duracion / 30;
+	public Date calcularFechaFin() 
+	{
+		if (duracion==0)
+		{
+			return fechaInicioDate;
 		}
-		int dias = duracion - meses * 30;
-		if (fechaInicioDate.getMonth() + meses > 12) {
-			fechaFin.setYear(fechaInicioDate.getYear() + 1);
-			fechaFin.setMonth(fechaInicioDate.getMonth() + meses - 12);
-			fechaFin.setDate(dias);
-		}
-
-		return fechaFin;
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(fechaInicioDate); 
+		calendar.add(Calendar.DAY_OF_YEAR, duracion);  
+		return calendar.getTime(); 
 	}
 
 	public Date calcularFechaConDiasDespues(int diasMas) {
-		Date fechaCon = new Date();
-		int meses = 0;
-		if (diasMas / 30 > 0) {
-			meses = diasMas / 30;
+		if (diasMas==0)
+		{
+			return fechaInicioDate;
 		}
-		int dias = diasMas - meses * 30;
-		if (fechaInicioDate.getMonth() + meses > 12) {
-			fechaCon.setYear(fechaInicioDate.getYear() + 1);
-			fechaCon.setMonth(fechaInicioDate.getMonth() + meses - 12);
-			fechaCon.setDate(dias);
-		}
-
-		return fechaCon;
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(fechaInicioDate); 
+		calendar.add(Calendar.DAY_OF_YEAR, diasMas);  
+		return calendar.getTime(); 
 	}
 
 	public Date getFechaInicioDate() {
@@ -182,7 +187,7 @@ public class Reserva {
 
 	public void setFechaInicioDate(Date fechaInicioDate) {
 		this.fechaInicioDate = fechaInicioDate;
-		this.fechaInicio = (this.fechaInicioDate.getYear() +1900) + "-" + (this.fechaInicioDate.getMonth() +1) +"-" + this.fechaInicioDate.getDate();
+		this.fechaInicio =  (this.fechaInicioDate.getYear() +1900) + "-" + (this.fechaInicioDate.getMonth() +1) +"-" + this.fechaInicioDate.getDate();
 	}
 
 	public Date getFechaReservaDate() {
@@ -191,6 +196,6 @@ public class Reserva {
 
 	public void setFechaReservaDate(Date fechaReservaDate) {
 		this.fechaReservaDate = fechaReservaDate;
-		this.fechaReserva = (this.fechaReservaDate.getYear() +1900) + "-" + (this.fechaReservaDate.getMonth() +1) +"-" + this.fechaReservaDate.getDate();
+		this.fechaReserva =  (this.fechaReservaDate.getYear() +1900) + "-" + (this.fechaReservaDate.getMonth() +1) +"-" + this.fechaReservaDate.getDate();
 	}	
 }

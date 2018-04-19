@@ -71,8 +71,8 @@ public class DAOVinculo
 	public void updateVinculo(Vinculo vinculo) throws SQLException, Exception {
 		String sql = "UPDATE VINCULOS SET ";
 		sql += "ID = " + vinculo.getId() + ",";
-		sql += "NOMBRE= " + vinculo.getVinculo() + ",";
-		sql += "DESCRIPCION = " + vinculo.getDescripcion() + ")";		
+		sql += "NOMBRE= '" + vinculo.getVinculo() + "',";
+		sql += "DESCRIPCION = '" + vinculo.getDescripcion() + "')";		
 
 		System.out.println("SQL stmt:" + sql);
 

@@ -119,7 +119,7 @@ public class Cliente {
 		
 		for(long id : reservasId)
 		{
-			reservas.add(daoReserva.buscarReserva(getId(), id));
+			reservas.add(daoReserva.buscarReserva(id));
 		}
 		
 		boolean resHoy = false;

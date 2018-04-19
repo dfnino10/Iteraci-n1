@@ -58,8 +58,8 @@ public class DAOCategoriaHabitacion
 	public void addCategoriaHabitacion(CategoriaHabitacion categoriaHabitacion) throws SQLException, Exception {
 		String sql = "INSERT INTO CATEGORIASHABITACION VALUES (";
 		sql += "ID = " + categoriaHabitacion.getId() + ",";
-		sql += "NOMBRE= " + categoriaHabitacion.getCategoria() + ",";
-		sql += "DESCRIPCION = " + categoriaHabitacion.getDescripcion() + ")";		
+		sql += "NOMBRE= '" + categoriaHabitacion.getCategoria() + "',";
+		sql += "DESCRIPCION = '" + categoriaHabitacion.getDescripcion() + "')";		
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -71,8 +71,8 @@ public class DAOCategoriaHabitacion
 	public void updateCategoriaHabitacion(CategoriaHabitacion categoriaHabitacion) throws SQLException, Exception {
 		String sql = "UPDATE CATEGORIASHABITACION SET ";
 		sql += "ID = " + categoriaHabitacion.getId() + ",";
-		sql += "NOMBRE = " + categoriaHabitacion.getCategoria() + ",";
-		sql += "DESCRIPCION = " + categoriaHabitacion.getDescripcion() + ")";		
+		sql += "NOMBRE = '" + categoriaHabitacion.getCategoria() + "',";
+		sql += "DESCRIPCION = '" + categoriaHabitacion.getDescripcion() + "')";		
 
 		System.out.println("SQL stmt:" + sql);
 

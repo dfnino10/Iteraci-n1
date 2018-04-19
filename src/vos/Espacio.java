@@ -192,7 +192,7 @@ public class Espacio {
 		
 		for(long ido : reservasId)
 		{
-			reservas.add(daoReserva.buscarReserva(ido, getId()));
+			reservas.add(daoReserva.buscarReserva(ido));
 		}
 		
 		int ocupacion = 0;
@@ -234,6 +234,6 @@ public class Espacio {
 
 	public void setFechaRetiroDate(Date fechaRetiroDate) {
 		this.fechaRetiroDate = fechaRetiroDate;
-		this.fechaRetiro = (this.fechaRetiroDate.getYear() +1900) + "-" + (this.fechaRetiroDate.getMonth() +1) +"-" + this.fechaRetiroDate.getDate();
+		this.fechaRetiro =(this.fechaRetiroDate.getYear() +1900) + "-" + (this.fechaRetiroDate.getMonth() +1) +"-" +  this.fechaRetiroDate.getDate();
 	}
 }

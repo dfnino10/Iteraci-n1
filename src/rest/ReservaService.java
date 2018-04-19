@@ -49,7 +49,7 @@ public class ReservaService {
 
 	// RF5
 
-	@PUT
+	@DELETE
 	@Path("/reserva")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -57,7 +57,7 @@ public class ReservaService {
 		AlohAndesTransactionManager tm = new AlohAndesTransactionManager(getPath());
 
 		try {
-			tm.cancelarReserva(reserva);
+			reserva = tm.cancelarReserva(reserva);
 			return Response.status(200).entity(reserva).build();
 		} catch (Exception e) {
 			return Response.status(500).entity(doErrorMessage(e)).build();

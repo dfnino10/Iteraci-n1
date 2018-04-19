@@ -68,8 +68,8 @@ public class DAOServicio {
 		String sql = "INSERT INTO SERVICIOS (id, idEspacio, idCategoria, descripcion, precioAdicional, inicioHorario, finHorario) VALUES (";
 		sql += servicio.getId() + ",";
 		sql += servicio.getEspacio() + ",";
-		sql += servicio.getCategoria().getId() + ",";		
-		sql += servicio.getDescripcion() + ",";
+		sql += servicio.getCategoria().getId() + ",'";		
+		sql += servicio.getDescripcion() + "',";
 		sql += servicio.getPrecioAdicional() + ",";
 		sql += servicio.getInicioHorario() + ",";
 		sql += servicio.getFinHorario() + ")";
@@ -85,7 +85,7 @@ public class DAOServicio {
 		String sql = "UPDATE SERVICIOS SET ";
 		sql += "idEspacio = " + servicio.getEspacio() + ",";
 		sql += "idCategoria = " + servicio.getCategoria().getId() + ",";		
-		sql += "descripcion = " + servicio.getDescripcion() + ",";
+		sql += "descripcion = '" + servicio.getDescripcion() + "',";
 		sql += "precioAdicional = " + servicio.getPrecioAdicional() + ",";
 		sql += "inicioHorario = " + servicio.getInicioHorario() + ",";
 		sql += "finHorario = " + servicio.getFinHorario();

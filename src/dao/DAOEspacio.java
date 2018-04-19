@@ -92,8 +92,8 @@ public class DAOEspacio {
 		sql += espacio.getOperador() + ",";
 		sql += espacio.getCapacidad() + ",";
 		sql += espacio.getRegistro() + ",";
-		sql += espacio.getTamaño() + ",";
-		sql += espacio.getUbicacion() + ",";
+		sql += espacio.getTamaño() + ",'";
+		sql += espacio.getUbicacion() + "',";
 		sql += espacio.getPrecio() + ",";	
 		sql += "TO_DATE('"+(espacio.getFechaRetiroDate().getDate()) + "-" + (espacio.getFechaRetiroDate().getMonth() +1) +"-" + (espacio.getFechaRetiroDate().getYear()+1900)  + "','DD-MM-YYYY'))";
 
@@ -110,10 +110,10 @@ public class DAOEspacio {
 		sql += "capacidad = " + espacio.getCapacidad() + ",";
 		sql += "registro = " + espacio.getRegistro() + ",";
 		sql += "tamaño = " + espacio.getTamaño() + ",";
-		sql += "direccion = " + espacio.getUbicacion() + ",";
+		sql += "direccion = '" + espacio.getUbicacion() + "',";
 		sql += "precio = " + espacio.getPrecio() + ",";		
-		sql += "fechaRetiro = TO_DATE('"+(espacio.getFechaRetiroDate().getDate()) + "-" + (espacio.getFechaRetiroDate().getMonth() +1) +"-" + (espacio.getFechaRetiroDate().getYear()+1900)  + "','DD-MM-YYYY'),";
-		sql += "WHERE id =" + espacio.getId();
+		sql += "fechaRetiro = TO_DATE('"+(espacio.getFechaRetiroDate().getDate()) + "-" + (espacio.getFechaRetiroDate().getMonth() +1) +"-" + (espacio.getFechaRetiroDate().getYear()+1900)  + "','DD-MM-YYYY')";
+		sql += " WHERE id =" + espacio.getId();
 
 		System.out.println("SQL stmt:" + sql);
 
