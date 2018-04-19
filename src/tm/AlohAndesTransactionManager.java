@@ -90,6 +90,11 @@ public class AlohAndesTransactionManager
 				throw e;
 			}		
 			
+			if(reserva.getDuracion() <= 0)
+			{
+				throw new Exception ("La duración tiene que ser entera y positiva para representar los días de la reserva");
+			}
+			
 			reserva.setFechaReservaDate(new Date());
 			Date fecha = reserva.getFechaReservaDate();
 			
