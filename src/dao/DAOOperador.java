@@ -71,8 +71,8 @@ public class DAOOperador {
 	public void addOperador(Operador operador) throws SQLException, Exception {
 		String sql = "INSERT INTO OPERADORES (id, idCategoria, nombre, registro, documento) VALUES (";
 		sql += operador.getId() + ",";
-		sql += operador.getCategoria().getId() + ",";
-		sql += operador.getNombre() + ",";
+		sql += operador.getCategoria().getId() + ",'";
+		sql += operador.getNombre() + "',";
 		sql += operador.getRegistro() + ",";
 		sql += operador.getDocumento() + ")";
 		
@@ -87,7 +87,7 @@ public class DAOOperador {
 	public void updateOperador(Operador operador) throws SQLException, Exception {
 		String sql = "UPDATE OPERADORES SET ";
 		sql += "documento = " + operador.getDocumento() + ",";
-		sql += "nombre = " + operador.getNombre() + ",";
+		sql += "nombre = '" + operador.getNombre() + "',";
 		sql += "registro = " + operador.getRegistro() + ",";
 		sql += "idCategoria = " + operador.getCategoria().getId();
 		sql += " WHERE ID = " + operador.getId();

@@ -90,7 +90,13 @@ public class AlohAndesTransactionManager
 				throw e;
 			}		
 			
-			Date fecha = new Date();
+			if(reserva.getDuracion() <= 0)
+			{
+				throw new Exception ("La duración tiene que ser entera y positiva para representar los días de la reserva");
+			}
+			
+			reserva.setFechaReservaDate(new Date());
+			Date fecha = reserva.getFechaReservaDate();
 			
 			if (fecha.after(reserva.getFechaInicioDate())) {
 				throw new Exception("La reserva debe iniciar después que la fecha actual");
@@ -115,7 +121,29 @@ public class AlohAndesTransactionManager
 				throw new Exception("Sólo estudiantes, profesores y empleados pueden usar vivienda universitaria");
 			}
 			
+			//Verifico franjas permitidas
 			
+			List<Long> reservasId = daoReserva.buscarReservasIdCliente(reserva.getIdCliente());
+			
+			for(long resId : reservasId)
+			{
+				Reserva res = daoReserva.buscarReserva(resId);
+				if(res.getFechaInicioDate().before(reserva.calcularFechaFin()) && res.calcularFechaFin().after(reserva.getFechaInicioDate()))
+				{
+					throw new Exception ("El cliente tiene ya reservas en estas fechas");
+				}
+			}
+			
+			reservasId = daoReserva.buscarReservasIdEspacio(reserva.getIdEspacio());
+			
+			for(long resId : reservasId)
+			{
+				Reserva res = daoReserva.buscarReserva(resId);
+				if(res.getFechaInicioDate().before(reserva.calcularFechaFin()) && res.calcularFechaFin().after(reserva.getFechaInicioDate()))
+				{
+					throw new Exception ("El espacio tiene ya reservas en estas fechas");
+				}
+			}
 			
 			if (cliente.reservaHoy(conn, fecha)) {
 				throw new Exception("No puede hacerse más de una reserva al día");
@@ -151,7 +179,7 @@ public class AlohAndesTransactionManager
 
 	// RF5
 
-	public void cancelarReserva(Reserva reserva) throws Exception {
+	public Reserva cancelarReserva(Reserva reserva) throws Exception {
 		DAOReserva daoReserva = new DAOReserva();
 		DAOCliente daoCliente = new DAOCliente();
 		DAOEspacio daoEspacio = new DAOEspacio();
@@ -162,19 +190,11 @@ public class AlohAndesTransactionManager
 			daoReserva.setConn(conn);
 			daoCliente.setConn(conn);
 			daoEspacio.setConn(conn);
-
-			Cliente cliente = null;
-			Espacio espacio = null;
-			try {
-				cliente = daoCliente.buscarCliente(reserva.getIdCliente());
-				espacio = daoEspacio.buscarEspacio(reserva.getIdEspacio());
-			} catch (Exception e) {
-				System.err.println(e.getMessage());
-				e.printStackTrace();
-				throw e;
-			}
-
-			if (reserva.isCancelado()) {
+			
+			reserva = daoReserva.buscarReserva(reserva.getId());
+			
+			if (reserva.isCancelado())
+			{
 				throw new Exception("La reserva ya está cancelada");
 			}
 
@@ -182,25 +202,29 @@ public class AlohAndesTransactionManager
 
 			if (reserva.getDuracion() < 7 && fechaCancelacion.before(reserva.calcularFechaConDiasDespues(4))) {
 				reserva.setCancelado(true);
-				espacio.setPrecio(espacio.getPrecio() * 0.1);
+				reserva.setPrecio(reserva.getPrecio() * 0.1);
 			}
 
 			if (reserva.getDuracion() < 7 && fechaCancelacion.after(reserva.calcularFechaConDiasDespues(3))) {
 				reserva.setCancelado(true);
-				espacio.setPrecio(espacio.getPrecio() * 0.3);
+				reserva.setPrecio(reserva.getPrecio() * 0.3);
 			}
 
-			if (reserva.getDuracion() > 7 && fechaCancelacion.before(reserva.calcularFechaConDiasDespues(8))) {
+			if (reserva.getDuracion() >= 7 && fechaCancelacion.before(reserva.calcularFechaConDiasDespues(8))) {
 				reserva.setCancelado(true);
-				espacio.setPrecio(espacio.getPrecio() * 0.1);
+				reserva.setPrecio(reserva.getPrecio() * 0.1);
 			}
 
-			if (reserva.getDuracion() > 7 && fechaCancelacion.after(reserva.calcularFechaConDiasDespues(7))) {
+			if (reserva.getDuracion() >= 7 && fechaCancelacion.after(reserva.calcularFechaConDiasDespues(7))) {
 				reserva.setCancelado(true);
-				espacio.setPrecio(espacio.getPrecio() * 0.3);
+				reserva.setPrecio(reserva.getPrecio() * 0.3);
 			}
 
 			daoReserva.updateReserva(reserva);
+			
+			conn.commit();
+			
+			return reserva;
 		} catch (SQLException e) {
 			System.err.println("SQLException:" + e.getMessage());
 			e.printStackTrace();
@@ -224,18 +248,23 @@ public class AlohAndesTransactionManager
 
 	// RF6
 
-	public void cancelarEspacio(Espacio espacio, Date fechaCancelacion) throws Exception {
+	public Espacio cancelarEspacio(Espacio espacio, Date fechaCancelacion) throws Exception {
 		DAOReserva daoReserva = new DAOReserva();
 		DAOOperador daoOperador = new DAOOperador();
 		DAOEspacio daoEspacio = new DAOEspacio();
 
 		try {
-			////// TransacciÃ³n
+			////// Transacción
 			this.conn = darConexion();
 			daoReserva.setConn(conn);
 			daoOperador.setConn(conn);
 			daoEspacio.setConn(conn);
-
+			
+			if(fechaCancelacion == null)
+			{
+				fechaCancelacion = new Date();
+			}
+			
 			Operador operador = null;
 			List<Reserva> reservas = new ArrayList<Reserva>();
 
@@ -249,7 +278,7 @@ public class AlohAndesTransactionManager
 				List<Long> reservasId = daoReserva.buscarReservasIdEspacio(espacio.getId());
 				for(long id : reservasId)
 				{
-					reservas.add(daoReserva.buscarReserva(id, espacio.getId()));
+					reservas.add(daoReserva.buscarReserva(id));
 				}
 			} catch (Exception e) {
 				System.err.println(e.getMessage());
@@ -267,6 +296,10 @@ public class AlohAndesTransactionManager
 			espacio.setFechaRetiroDate(fechaCancelacion);
 			
 			daoEspacio.updateEspacio(espacio);
+			
+			conn.commit();
+			
+			return espacio;
 		} catch (SQLException e) {
 			System.err.println("SQLException:" + e.getMessage());
 			e.printStackTrace();

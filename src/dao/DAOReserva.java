@@ -2,6 +2,7 @@ package dao;
 
 import java.sql.Connection;
 import java.util.Date;
+import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -48,6 +49,7 @@ public class DAOReserva {
 		ResultSet rs = prepStmt.executeQuery();
 
 		while (rs.next()) {
+			long id = Long.parseLong(rs.getString("ID"));
 			long idCliente = Long.parseLong(rs.getString("IDCLIENTE"));
 			long idEspacio = Long.parseLong(rs.getString("IDESPACIO"));			
 			String fechaInicio = rs.getString("FECHAINICIO");
@@ -58,14 +60,15 @@ public class DAOReserva {
 			if (rs.getString("CANCELADO").equals('Y')) {
 				cancelado = true;
 			}
-			reservas.add(new Reserva(idCliente, idEspacio, fechaInicio, duracion, fechaReserva, cancelado, precio));
+			reservas.add(new Reserva(id,idCliente, idEspacio, fechaInicio, duracion, fechaReserva, cancelado, precio));
 		}
 		return reservas;
 	}
 
 	public void addReserva(Reserva reserva) throws SQLException, Exception
 	{
-		String sql = "INSERT INTO RESERVAS (idEspacio, idCliente, duracion, fechaInicio, fechaReserva, precio, cancelado) VALUES (";
+		String sql = "INSERT INTO RESERVAS (id, idEspacio, idCliente, duracion, fechaInicio, fechaReserva, precio, cancelado) VALUES (";
+		sql += reserva.getId() + ",";
 		sql += reserva.getIdEspacio() + ",";
 		sql += reserva.getIdCliente() + ",";
 		sql += reserva.getDuracion() + ",";
@@ -100,6 +103,8 @@ public class DAOReserva {
 
 	public void updateReserva(Reserva reserva) throws SQLException, Exception {
 		String sql = "UPDATE RESERVAS SET ";
+		sql += "idCliente =" +reserva.getIdCliente() +",";
+		sql += "idEspacio =" +reserva.getIdEspacio() +",";
 		sql += "duracion = " + reserva.getDuracion() + ",";
 		sql += "fechaInicio = TO_DATE('"+(reserva.getFechaInicioDate().getDate()) + "-" + (reserva.getFechaInicioDate().getMonth() +1) +"-" + (reserva.getFechaInicioDate().getYear()+1900)  + "','DD-MM-YYYY'),";
 		sql += "fechaReserva = TO_DATE('"+(reserva.getFechaReservaDate().getDate()) + "-" + (reserva.getFechaReservaDate().getMonth() +1) +"-" + (reserva.getFechaReservaDate().getYear()+1900)   + "','DD-MM-YYYY'),";
@@ -121,7 +126,7 @@ public class DAOReserva {
 		}
 		sql += "precio = " + reserva.getPrecio() + ",";
 		sql += "cancelado = '" + cancelado;
-		sql += "' WHERE IDCLIENTE = " + reserva.getIdCliente() + " AND IDESPACIO = " + reserva.getIdEspacio();
+		sql += "' WHERE ID = " + reserva.getId();
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -132,7 +137,7 @@ public class DAOReserva {
 
 	public void deleteReserva(Reserva reserva) throws SQLException, Exception {
 		String sql = "DELETE FROM RESERVAS";
-		sql += " WHERE IDCLIENTE = " + reserva.getIdCliente() + " AND IDESPACIO = " + reserva.getIdEspacio();
+		sql += " WHERE ID " + reserva.getId();
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -140,9 +145,9 @@ public class DAOReserva {
 		recursos.add(prepStmt);
 		prepStmt.executeQuery();
 	}
-
-	public Reserva buscarReserva(long idCliente, long idEspacio) throws SQLException, Exception {
-		String sql = "SELECT * FROM RESERVAS WHERE IDCLIENTE = " + idCliente + " AND IDESPACIO = " + idEspacio;
+	
+	public Reserva buscarReserva(long id) throws SQLException, Exception {
+		String sql = "SELECT * FROM RESERVAS WHERE ID = " + id;
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -152,19 +157,43 @@ public class DAOReserva {
 		
 		if(!rs.next())
 		{
-			throw new Exception ("No se encontró ninguna reserva con el idCliente = "+idCliente + " y con idEspacio = " + idEspacio);
+			throw new Exception ("No se encontró ninguna reserva con el id = "+ id);
 		}
 		
+		long idCliente = Long.parseLong(rs.getString("IDCLIENTE"));
+		long idEspacio = Long.parseLong(rs.getString("IDESPACIO"));
 		String fechaInicio = rs.getString("FECHAINICIO");
 		int duracion = Integer.parseInt(rs.getString("DURACION"));
 		String fechaReserva = rs.getString("FECHARESERVA");
+		System.out.println(fechaReserva);
 		boolean cancelado = false;
 		double precio = Double.parseDouble(rs.getString("PRECIO"));
-		if (rs.getString("CANCELADO").equals('Y')) {
+		if (rs.getString("CANCELADO").equals("Y")) {
 			cancelado = true;
 		}
 
-		return new Reserva(idCliente, idEspacio, fechaInicio, duracion, fechaReserva, cancelado, precio);
+		return new Reserva(id, idCliente, idEspacio, fechaInicio, duracion, fechaReserva, cancelado, precio);
+	}
+	
+	public ArrayList<Long> buscarReservasIdClienteIdEspacio(long idCliente, long idEspacio) throws SQLException, Exception {
+		
+		ArrayList<Long> reservas = new ArrayList<Long>();
+		
+		String sql = "SELECT * FROM RESERVAS WHERE IDCLIENTE = " + idCliente + " AND IDESPACIO = " + idEspacio;
+
+		System.out.println("SQL stmt:" + sql);
+
+		PreparedStatement prepStmt = conn.prepareStatement(sql);
+		recursos.add(prepStmt);
+		ResultSet rs = prepStmt.executeQuery();
+		
+		while(rs.next())
+		{
+			long idR = Long.parseLong(rs.getString("ID"));
+			reservas.add(idR);
+		}		
+		
+		return reservas;
 	}
 
 	public ArrayList<Long> buscarReservasIdCliente(long idCliente) throws SQLException, Exception {
@@ -180,8 +209,8 @@ public class DAOReserva {
 		ResultSet rs = prepStmt.executeQuery();
 
 		while (rs.next()) {
-			long idEspacio = Long.parseLong(rs.getString("IDESPACIO"));
-			reservas.add(idEspacio);
+			long idR = Long.parseLong(rs.getString("ID"));
+			reservas.add(idR);
 		}
 		return reservas;
 	}
@@ -199,9 +228,9 @@ public class DAOReserva {
 		ResultSet rs = prepStmt.executeQuery();
 
 		while (rs.next()) {
-			long idCliente = Long.parseLong(rs.getString("IDCLIENTE"));
+			long idR = Long.parseLong(rs.getString("ID"));
 
-			reservas.add(idCliente);
+			reservas.add(idR);
 		}
 		return reservas;
 	}

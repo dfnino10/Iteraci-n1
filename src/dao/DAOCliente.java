@@ -69,10 +69,10 @@ public class DAOCliente {
 		String sql = "INSERT INTO CLIENTES (id, idVinculo, documento, nombre, edad, direccion) VALUES (";
 		sql += cliente.getId() + ",";
 		sql += cliente.getVinculo().getId() + ",";
-		sql += cliente.getIdentificacion() + ",";
-		sql += cliente.getNombre() + ",";		
-		sql += cliente.getEdad() + ",";
-		sql += cliente.getDireccion() + ")";		
+		sql += cliente.getIdentificacion() + ",'";
+		sql += cliente.getNombre() + "',";		
+		sql += cliente.getEdad() + ",'";
+		sql += cliente.getDireccion() + "')";		
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -85,10 +85,10 @@ public class DAOCliente {
 		String sql = "UPDATE CLIENTES SET ";
 		sql += "idVinculo = " + cliente.getVinculo().getId() + ",";
 		sql += "documento = " + cliente.getIdentificacion() + ",";
-		sql += "nombre = " + cliente.getNombre() + ",";		
+		sql += "nombre = '" + cliente.getNombre() + "',";		
 		sql += "edad = " + cliente.getEdad() + ",";
-		sql += "direccion = " + cliente.getDireccion();
-		sql += " WHERE ID = " + cliente.getId();
+		sql += "direccion = '" + cliente.getDireccion();
+		sql += "' WHERE ID = " + cliente.getId();
 
 		System.out.println("SQL stmt:" + sql);
 
