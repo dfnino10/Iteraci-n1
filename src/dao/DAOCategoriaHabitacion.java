@@ -39,16 +39,15 @@ public class DAOCategoriaHabitacion
 	public ArrayList<CategoriaHabitacion> darCategoriasHabitacion() throws SQLException, Exception {
 		ArrayList<CategoriaHabitacion> categoriasHabitacion = new ArrayList<CategoriaHabitacion>();
 
-		String sql = "SELECT * FROM CATEGORIAS_HABITACION";
+		String sql = "SELECT * FROM CATEGORIASHABITACION";
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-		System.out.println(rs.next());
 
 		while (rs.next()) {
 			long id = Long.parseLong(rs.getString("ID"));
-			String categoria = rs.getString("CATEGORIA");
+			String categoria = rs.getString("NOMBRE");
 			String descripcion = rs.getString("DESCRIPCIÓN");
 
 			categoriasHabitacion.add(new CategoriaHabitacion(id, categoria, descripcion));
@@ -57,9 +56,9 @@ public class DAOCategoriaHabitacion
 	}
 
 	public void addCategoriaHabitacion(CategoriaHabitacion categoriaHabitacion) throws SQLException, Exception {
-		String sql = "INSERT INTO CATEGORIAS_HABITACION VALUES (";
+		String sql = "INSERT INTO CATEGORIASHABITACION VALUES (";
 		sql += "ID = " + categoriaHabitacion.getId() + ",";
-		sql += "CATEGORIA= " + categoriaHabitacion.getCategoria() + ",";
+		sql += "NOMBRE= " + categoriaHabitacion.getCategoria() + ",";
 		sql += "DESCRIPCION = " + categoriaHabitacion.getDescripcion() + ")";		
 
 		System.out.println("SQL stmt:" + sql);
@@ -70,9 +69,9 @@ public class DAOCategoriaHabitacion
 	}
 
 	public void updateCategoriaHabitacion(CategoriaHabitacion categoriaHabitacion) throws SQLException, Exception {
-		String sql = "UPDATE CATEGORIAS_HABITACION SET ";
+		String sql = "UPDATE CATEGORIASHABITACION SET ";
 		sql += "ID = " + categoriaHabitacion.getId() + ",";
-		sql += "CATEGORIA= " + categoriaHabitacion.getCategoria() + ",";
+		sql += "NOMBRE = " + categoriaHabitacion.getCategoria() + ",";
 		sql += "DESCRIPCION = " + categoriaHabitacion.getDescripcion() + ")";		
 
 		System.out.println("SQL stmt:" + sql);
@@ -83,7 +82,7 @@ public class DAOCategoriaHabitacion
 	}
 
 	public void deleteCategoriaHabitacion(CategoriaHabitacion categoriaHabitacion) throws SQLException, Exception {
-		String sql = "DELETE FROM CATEGORIAS_HABITACION";
+		String sql = "DELETE FROM CATEGORIASHABITACION";
 		sql += " WHERE ID = " + categoriaHabitacion.getId();
 
 		System.out.println("SQL stmt:" + sql);
@@ -94,16 +93,21 @@ public class DAOCategoriaHabitacion
 	}
 
 	public CategoriaHabitacion buscarCategoriaHabitacion(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM CATEGORIAS_HABITACION WHERE ID  ='" + id + "'";
+		String sql = "SELECT * FROM CATEGORIASHABITACION WHERE ID  ='" + id + "'";
 
 		System.out.println("SQL stmt:" + sql);
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-
-		String categoria = rs.getString("CATEGORIA");
-		String descripcion = rs.getString("DESCRIPCIÓN");
+		
+		if(!rs.next())
+		{
+			return null;
+		}
+		
+		String categoria = rs.getString("NOMBRE");
+		String descripcion = rs.getString("DESCRIPCION");
 
 		return new CategoriaHabitacion(id, categoria, descripcion);
 	}

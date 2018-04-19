@@ -46,7 +46,6 @@ public class DAOHabitacion {
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-		System.out.println(rs.next());
 
 		while (rs.next()) {
 			long id = Long.parseLong(rs.getString("ID"));
@@ -57,10 +56,10 @@ public class DAOHabitacion {
 			}
 			DAOCategoriaHabitacion daoCategoriaHabitacion = new DAOCategoriaHabitacion();			
 			daoCategoriaHabitacion.setConn(conn);		
-			CategoriaHabitacion categoria = daoCategoriaHabitacion.buscarCategoriaHabitacion(Long.parseLong(rs.getString("ID_CATEGORIA")));			
+			CategoriaHabitacion categoria = daoCategoriaHabitacion.buscarCategoriaHabitacion(Long.parseLong(rs.getString("IDCATEGORIA")));			
 			DAOEspacio daoEspacio = new DAOEspacio();
 			daoEspacio.setConn(conn);
-			Espacio espacio = daoEspacio.buscarEspacio(daoEspacio.buscarEspacioIdHabitacion(id));
+			long espacio = daoEspacio.buscarEspacioIdHabitacion(id);
 
 			habitacions.add(new Habitacion(id, categoria, compartido, capacidad, espacio));
 		}
@@ -68,21 +67,18 @@ public class DAOHabitacion {
 	}
 
 	public void addHabitacion(Habitacion habitacion) throws SQLException, Exception {
-		String sql = "INSERT INTO HABITACIONES VALUES (";
-		sql += "id = " + habitacion.getId() + ",";
-		sql += "categoria = " + habitacion.getCategoria().toString() + ",";
-		sql += "capacidad = " + habitacion.getCapacidad() + ",";
+		String sql = "INSERT INTO HABITACIONES (id, idEspacio, idCategoria, capacidad, compartido) VALUES (";
+		sql += habitacion.getId() + ",";
+		sql += habitacion.getEspacio() + ",";
+		sql += habitacion.getCategoria().getId() + ",";
+		sql += habitacion.getCapacidad() + ",";
 		char comp;
 		if (habitacion.isCompartido()) {
 			comp = 'Y';
 		} else {
 			comp = 'N';
 		}
-		sql += "compartido = " + comp + ",";
-
-		String sqlR = "INSERT INTO ESPACIOSYHABITACIONES VALUES (";
-		sqlR += "idEspacio = " + habitacion.getEspacio().getId() + ",";
-		sqlR += "idHabitacion = " + habitacion.getId() + ")";
+		sql += comp + ")";
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -90,15 +86,12 @@ public class DAOHabitacion {
 		recursos.add(prepStmt);
 		prepStmt.executeQuery();
 
-		prepStmt = conn.prepareStatement(sqlR);
-		recursos.add(prepStmt);
-		prepStmt.executeQuery();
 	}
 
 	public void updateHabitacion(Habitacion habitacion) throws SQLException, Exception {
 		String sql = "UPDATE HABITACIONES SET ";
-		sql += "id = " + habitacion.getId() + ",";
-		sql += "categoria = " + habitacion.getCategoria().toString() + ",";
+		sql += "idEspacio = " + habitacion.getEspacio() + ",";
+		sql += "idEategoria = " + habitacion.getCategoria().getId() + ",";
 		sql += "capacidad = " + habitacion.getCapacidad() + ",";
 		char comp;
 		if (habitacion.isCompartido()) {
@@ -106,7 +99,7 @@ public class DAOHabitacion {
 		} else {
 			comp = 'N';
 		}
-		sql += "compartido = " + comp + ",";
+		sql += "compartido = " + comp;
 		sql += " WHERE ID = " + habitacion.getId();
 
 		System.out.println("SQL stmt:" + sql);
@@ -128,14 +121,19 @@ public class DAOHabitacion {
 	}
 
 	public Habitacion buscarHabitacion(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM HABITACIONES WHERE IDHABITACION  ='" + id + "'";
+		String sql = "SELECT * FROM HABITACIONES WHERE ID  =" + id;
 
 		System.out.println("SQL stmt:" + sql);
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-
+		
+		if(!rs.next())
+		{
+			throw new Exception ("No se encontró ninguna habitación con el id = "+id);
+		}
+		
 		int capacidad = Integer.parseInt(rs.getString("CAPACIDAD"));
 		boolean compartido = false;
 		if (rs.getString("COMPARTIDO").equals('Y')) {
@@ -143,16 +141,16 @@ public class DAOHabitacion {
 		}
 		DAOCategoriaHabitacion daoCategoriaHabitacion = new DAOCategoriaHabitacion();			
 		daoCategoriaHabitacion.setConn(conn);		
-		CategoriaHabitacion categoria = daoCategoriaHabitacion.buscarCategoriaHabitacion(Long.parseLong(rs.getString("ID_CATEGORIA")));			
+		CategoriaHabitacion categoria = daoCategoriaHabitacion.buscarCategoriaHabitacion(Long.parseLong(rs.getString("IDCATEGORIA")));			
 		DAOEspacio daoEspacio = new DAOEspacio();
 		daoEspacio.setConn(conn);
-		Espacio espacio = daoEspacio.buscarEspacio(daoEspacio.buscarEspacioIdHabitacion(id));
+		long espacio = daoEspacio.buscarEspacioIdHabitacion(id);
 
 		return new Habitacion(id, categoria, compartido, capacidad, espacio);
 	}
 
 	public List<Long> buscarHabitacionesIdEspacio(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM ESPACIOSYHABITACIONES WHERE IDESPACIO  ='" + id + "'";
+		String sql = "SELECT * FROM HABITACIONES WHERE IDESPACIO  =" + id ;
 
 		System.out.println("SQL stmt:" + sql);
 

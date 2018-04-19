@@ -45,21 +45,20 @@ public class DAOCliente {
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-		System.out.println(rs.next());
 
 		while (rs.next()) {
 			long id = Long.parseLong(rs.getString("ID"));
-			long identificacion = Long.parseLong(rs.getString("IDENTIFICACION"));
+			long identificacion = Long.parseLong(rs.getString("DOCUMENTO"));
 			String nombre = rs.getString("NOMBRE");
 			int edad = Integer.parseInt(rs.getString("EDAD"));
 			String direccion = rs.getString("DIRECCION");
 			DAOVinculo daoVinculo = new DAOVinculo();			
 			daoVinculo.setConn(conn);		
-			Vinculo vinculo= daoVinculo.buscarVinculo(Long.parseLong(rs.getString("ID_CATEGORIA")));	
+			Vinculo vinculo= daoVinculo.buscarVinculo(Long.parseLong(rs.getString("IDVINCULO")));	
 			DAOReserva daoReserva = new DAOReserva();
 			daoReserva.setConn(conn);
 
-			List<Reserva> reservas = daoReserva.buscarReservasIdCliente(id);
+			List<Long> reservas = daoReserva.buscarReservasIdCliente(id);
 
 			clientes.add(new Cliente(id, identificacion, nombre, edad, direccion, vinculo, reservas));
 		}
@@ -67,13 +66,13 @@ public class DAOCliente {
 	}
 
 	public void addCliente(Cliente cliente) throws SQLException, Exception {
-		String sql = "INSERT INTO CLIENTES VALUES (";
-		sql += "id = " + cliente.getId() + ",";
-		sql += "identificacion = " + cliente.getIdentificacion() + ",";
-		sql += "nombre = " + cliente.getNombre() + ",";
-		sql += "direccion = " + cliente.getDireccion() + ",";
-		sql += "edad = " + cliente.getEdad() + ",";
-		sql += "vinculo = " + cliente.getVinculo().toString() + ")";
+		String sql = "INSERT INTO CLIENTES (id, idVinculo, documento, nombre, edad, direccion) VALUES (";
+		sql += cliente.getId() + ",";
+		sql += cliente.getVinculo().getId() + ",";
+		sql += cliente.getIdentificacion() + ",";
+		sql += cliente.getNombre() + ",";		
+		sql += cliente.getEdad() + ",";
+		sql += cliente.getDireccion() + ")";		
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -84,11 +83,11 @@ public class DAOCliente {
 
 	public void updateCliente(Cliente cliente) throws SQLException, Exception {
 		String sql = "UPDATE CLIENTES SET ";
-		sql += "identificacion = " + cliente.getIdentificacion() + ",";
-		sql += "nombre = " + cliente.getNombre() + ",";
-		sql += "direccion = " + cliente.getDireccion() + ",";
+		sql += "idVinculo = " + cliente.getVinculo().getId() + ",";
+		sql += "documento = " + cliente.getIdentificacion() + ",";
+		sql += "nombre = " + cliente.getNombre() + ",";		
 		sql += "edad = " + cliente.getEdad() + ",";
-		sql += "vinculo = " + cliente.getVinculo().toString() + ",";
+		sql += "direccion = " + cliente.getDireccion();
 		sql += " WHERE ID = " + cliente.getId();
 
 		System.out.println("SQL stmt:" + sql);
@@ -117,32 +116,42 @@ public class DAOCliente {
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-
-		long identificacion = Long.parseLong(rs.getString("IDENTIFICACION"));
+		
+		if(!rs.next())
+		{
+			throw new Exception ("No se encontró ningún cliente con el id = "+id);
+		}
+		
+		long identificacion = Long.parseLong(rs.getString("DOCUMENTO"));
 		String nombre = rs.getString("NOMBRE");
 		int edad = Integer.parseInt(rs.getString("EDAD"));
 		String direccion = rs.getString("DIRECCION");
 		DAOVinculo daoVinculo = new DAOVinculo();			
 		daoVinculo.setConn(conn);		
-		Vinculo vinculo= daoVinculo.buscarVinculo(Long.parseLong(rs.getString("ID_CATEGORIA")));			
+		Vinculo vinculo= daoVinculo.buscarVinculo(Long.parseLong(rs.getString("IDVINCULO")));			
 
 		DAOReserva daoReserva = new DAOReserva();
 		daoReserva.setConn(conn);
 
-		List<Reserva> reservas = daoReserva.buscarReservasIdCliente(id);
+		List<Long> reservas = daoReserva.buscarReservasIdCliente(id);
 
 		return new Cliente(id, identificacion, nombre, edad, direccion, vinculo, reservas);
 	}
 
 	public Cliente buscarClienteIdReserva(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM RESERVAS WHERE ID  =" + id + "";
+		String sql = "SELECT * FROM RESERVAS WHERE ID  =" + id ;
 
 		System.out.println("SQL stmt:" + sql);
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-
+		
+		if(!rs.next())
+		{
+			return null;
+		}
+		
 		Long idCliente = Long.parseLong(rs.getString("IDCLIENTE"));
 		return buscarCliente(idCliente);
 	}

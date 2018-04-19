@@ -39,17 +39,16 @@ public class DAOCategoriaOperador
 	public ArrayList<CategoriaOperador> darCategoriasOperador() throws SQLException, Exception {
 		ArrayList<CategoriaOperador> categoriasOperador = new ArrayList<CategoriaOperador>();
 
-		String sql = "SELECT * FROM CATEGORIAS_OPERADOR";
+		String sql = "SELECT * FROM CATEGORIASOPERADOR";
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-		System.out.println(rs.next());
 
 		while (rs.next()) {
 			long id = Long.parseLong(rs.getString("ID"));
-			String categoria = rs.getString("CATEGORIA");
-			String descripcion = rs.getString("DESCRIPCIÓN");
+			String categoria = rs.getString("NOMBRE");
+			String descripcion = rs.getString("DESCRIPCION");
 
 			categoriasOperador.add(new CategoriaOperador(id, categoria, descripcion));
 		}
@@ -57,9 +56,9 @@ public class DAOCategoriaOperador
 	}
 
 	public void addCategoriaOperador(CategoriaOperador categoriaOperador) throws SQLException, Exception {
-		String sql = "INSERT INTO CATEGORIAS_OPERADOR VALUES (";
+		String sql = "INSERT INTO CATEGORIASOPERADOR VALUES (";
 		sql += "ID = " + categoriaOperador.getId() + ",";
-		sql += "CATEGORIA= " + categoriaOperador.getCategoria() + ",";
+		sql += "NOMBRE= " + categoriaOperador.getCategoria() + ",";
 		sql += "DESCRIPCION = " + categoriaOperador.getDescripcion() + ")";		
 
 		System.out.println("SQL stmt:" + sql);
@@ -70,9 +69,9 @@ public class DAOCategoriaOperador
 	}
 
 	public void updateCategoriaOperador(CategoriaOperador categoriaOperador) throws SQLException, Exception {
-		String sql = "UPDATE CATEGORIAS_OPERADOR SET ";
+		String sql = "UPDATE CATEGORIASOPERADOR SET ";
 		sql += "ID = " + categoriaOperador.getId() + ",";
-		sql += "CATEGORIA= " + categoriaOperador.getCategoria() + ",";
+		sql += "NOMBRE= " + categoriaOperador.getCategoria() + ",";
 		sql += "DESCRIPCION = " + categoriaOperador.getDescripcion() + ")";		
 
 		System.out.println("SQL stmt:" + sql);
@@ -83,7 +82,7 @@ public class DAOCategoriaOperador
 	}
 
 	public void deleteCategoriaOperador(CategoriaOperador categoriaOperador) throws SQLException, Exception {
-		String sql = "DELETE FROM CATEGORIAS_OPERADOR";
+		String sql = "DELETE FROM CATEGORIASOPERADOR";
 		sql += " WHERE ID = " + categoriaOperador.getId();
 
 		System.out.println("SQL stmt:" + sql);
@@ -94,7 +93,7 @@ public class DAOCategoriaOperador
 	}
 
 	public CategoriaOperador buscarCategoriaOperador(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM CATEGORIAS_OPERADOR WHERE ID  ='" + id + "'";
+		String sql = "SELECT * FROM CATEGORIASOPERADOR WHERE ID  ='" + id + "'";
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -102,8 +101,13 @@ public class DAOCategoriaOperador
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
 
-		String categoria = rs.getString("CATEGORIA");
-		String descripcion = rs.getString("DESCRIPCIÓN");
+		if(!rs.next())
+		{
+			throw new Exception ("No se encontró ninguna categoría de operador con el id = "+id);
+		}
+		
+		String categoria = rs.getString("NOMBRE");
+		String descripcion = rs.getString("DESCRIPCION");
 
 		return new CategoriaOperador(id, categoria, descripcion);
 	}

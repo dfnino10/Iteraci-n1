@@ -1,7 +1,6 @@
 package dao;
 
 import java.sql.Connection;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,6 +9,7 @@ import java.util.List;
 
 import vos.Servicio;
 import vos.CategoriaServicio;
+import vos.Espacio;
 
 public class DAOServicio {
 	private ArrayList<Object> recursos;
@@ -40,36 +40,39 @@ public class DAOServicio {
 	public ArrayList<Servicio> darServicios() throws SQLException, Exception {
 		ArrayList<Servicio> servicios = new ArrayList<Servicio>();
 
-		String sql = "SELECT * FROM ServicioS";
+		String sql = "SELECT * FROM SERVICIOS";
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-		System.out.println(rs.next());
 
 		while (rs.next()) {
 			long id = Long.parseLong(rs.getString("ID"));
 			DAOCategoriaServicio daoCategoriaServicio = new DAOCategoriaServicio();			
 			daoCategoriaServicio.setConn(conn);		
-			CategoriaServicio categoria = daoCategoriaServicio.buscarCategoriaServicio(Long.parseLong(rs.getString("ID_CATEGORIA")));
-			String descripcion = rs.getString("DESCRIPCIÓN");
+			CategoriaServicio categoria = daoCategoriaServicio.buscarCategoriaServicio(Long.parseLong(rs.getString("IDCATEGORIA")));
+			String descripcion = rs.getString("DESCRIPCION");
 			double precioAdicional = Double.parseDouble(rs.getString("PRECIOADICIONAL"));
 			int inicioHorario = Integer.parseInt(rs.getString("INICIOHORARIO"));
 			int finHorario = Integer.parseInt(rs.getString("FINHORARIO"));
+			DAOEspacio daoEspacio = new DAOEspacio();
+			daoEspacio.setConn(conn);
+			long espacio = Long.parseLong(rs.getString("IDESPACIO"));
 
-			servicios.add(new Servicio(id, categoria, descripcion, precioAdicional, inicioHorario, finHorario));
+			servicios.add(new Servicio(id, categoria, descripcion, precioAdicional, inicioHorario, finHorario, espacio));
 		}
 		return servicios;
 	}
 
 	public void addServicio(Servicio servicio) throws SQLException, Exception {
-		String sql = "INSERT INTO SERVICIOS VALUES (";
-		sql += "ID = " + servicio.getId() + ",";
-		sql += "CATEGORÍA= " + servicio.getCategoria() + ",";
-		sql += "DESCRIPCIÓN = " + servicio.getDescripcion() + ",";
-		sql += "PRECIOADICIONAL = " + servicio.getPrecioAdicional() + ",";
-		sql += "INICIOHORARIO= " + servicio.getInicioHorario() + ",";
-		sql += "FINHORARIO = " + servicio.getFinHorario() + ",";
+		String sql = "INSERT INTO SERVICIOS (id, idEspacio, idCategoria, descripcion, precioAdicional, inicioHorario, finHorario) VALUES (";
+		sql += servicio.getId() + ",";
+		sql += servicio.getEspacio() + ",";
+		sql += servicio.getCategoria().getId() + ",";		
+		sql += servicio.getDescripcion() + ",";
+		sql += servicio.getPrecioAdicional() + ",";
+		sql += servicio.getInicioHorario() + ",";
+		sql += servicio.getFinHorario() + ")";
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -80,11 +83,12 @@ public class DAOServicio {
 
 	public void updateServicio(Servicio servicio) throws SQLException, Exception {
 		String sql = "UPDATE SERVICIOS SET ";
-		sql += "CATEGORÍA= " + servicio.getCategoria() + ",";
-		sql += "DESCRIPCIÓN = " + servicio.getDescripcion() + ",";
-		sql += "PRECIOADICIONAL = " + servicio.getPrecioAdicional() + ",";
-		sql += "INICIOHORARIO= " + servicio.getInicioHorario() + ",";
-		sql += "FINHORARIO = " + servicio.getFinHorario() + ",";
+		sql += "idEspacio = " + servicio.getEspacio() + ",";
+		sql += "idCategoria = " + servicio.getCategoria().getId() + ",";		
+		sql += "descripcion = " + servicio.getDescripcion() + ",";
+		sql += "precioAdicional = " + servicio.getPrecioAdicional() + ",";
+		sql += "inicioHorario = " + servicio.getInicioHorario() + ",";
+		sql += "finHorario = " + servicio.getFinHorario();
 		sql += " WHERE ID = " + servicio.getId();
 
 		System.out.println("SQL stmt:" + sql);
@@ -106,7 +110,7 @@ public class DAOServicio {
 	}
 
 	public Servicio buscarServicio(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM SERVICIOS WHERE ID  ='" + id + "'";
+		String sql = "SELECT * FROM SERVICIOS WHERE ID  =" + id;
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -118,21 +122,28 @@ public class DAOServicio {
 		
 		daoCategoriaServicio.setConn(conn);
 		
+		if(!rs.next())
+		{
+			throw new Exception ("No se encontró ningún servicio con el id = "+id);
+		}
 		
-		
-		CategoriaServicio categoria = daoCategoriaServicio.buscarCategoriaServicio(Long.parseLong(rs.getString("ID_CATEGORIA")));
-		String descripcion = rs.getString("DESCRIPCIÓN");
+		CategoriaServicio categoria = daoCategoriaServicio.buscarCategoriaServicio(Long.parseLong(rs.getString("IDCATEGORIA")));
+		String descripcion = rs.getString("DESCRIPCION");
 		double precioAdicional = Double.parseDouble(rs.getString("PRECIOADICIONAL"));
 		int inicioHorario = Integer.parseInt(rs.getString("INICIOHORARIO"));
 		int finHorario = Integer.parseInt(rs.getString("FINHORARIO"));
+		
+		DAOEspacio daoEspacio = new DAOEspacio();
+		daoEspacio.setConn(conn);
+		long espacio = Long.parseLong(rs.getString("IDESPACIO"));
 
-		return new Servicio(id, categoria, descripcion, precioAdicional, inicioHorario, finHorario);
+		return new Servicio(id, categoria, descripcion, precioAdicional, inicioHorario, finHorario, espacio);
 	}
 
-	public List<Servicio> buscarServiciosIdEspacio(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM ESPACIOSYSERVICIOS WHERE IDESPACIO  ='" + id + "'";
+	public List<Long> buscarServiciosIdEspacio(long id) throws SQLException, Exception {
+		String sql = "SELECT * FROM SERVICIOS WHERE IDESPACIO =" + id;
 
-		ArrayList<Servicio> servicios = new ArrayList<Servicio>();
+		ArrayList<Long> servicios = new ArrayList<Long>();
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -141,9 +152,9 @@ public class DAOServicio {
 		ResultSet rs = prepStmt.executeQuery();
 
 		while (rs.next()) {
-			long idS = Long.parseLong(rs.getString("IDSERVICIO"));
+			long idS = Long.parseLong(rs.getString("ID"));
 
-			servicios.add(buscarServicio(idS));
+			servicios.add(idS);
 		}
 		return servicios;
 

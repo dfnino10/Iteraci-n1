@@ -7,7 +7,7 @@ public class CategoriaHabitacion
 	@JsonProperty(value = "id")
 	private long id;
 	
-	@JsonProperty(value = "categoria")
+	@JsonProperty(value = "nombre")
 	private String categoria;
 	
 	@JsonProperty(value = "descripcion")

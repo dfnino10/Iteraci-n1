@@ -1,9 +1,16 @@
 package vos;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.*;
+
+import dao.DAOHabitacion;
+import dao.DAOReserva;
 
 /**
  * @author Nicolás Mateo Hernández Rojas - nm.hernandez10@uniandes.edu.co
@@ -31,38 +38,50 @@ public class Espacio {
 	private double precio;
 
 	@JsonProperty(value = "fechaRetiro")
-	private Date fechaRetiro;
+	private String fechaRetiro;
+	
+	private Date fechaRetiroDate;
 
 	@JsonProperty(value = "operador")
-	private Operador operador;
+	private long operador;
 
 	@JsonProperty(value = "reservas")
-	private List<Reserva> reservas;
+	private List<Long> reservas;
 
 	@JsonProperty(value = "servicios")
-	private List<Servicio> servicios;
+	private List<Long> servicios;
 
 	@JsonProperty(value = "habitaciones")
-	private List<Habitacion> habitaciones;
+	private List<Long> habitaciones;
 
 	public Espacio(@JsonProperty(value = "id") long id, @JsonProperty(value = "registro") long registro,
 			@JsonProperty(value = "capacidad") int capacidad, @JsonProperty(value = "tamaño") double tamaño,
 			@JsonProperty(value = "ubicacion") String ubicacion, @JsonProperty(value = "precio") double precio,
-			@JsonProperty(value = "fechaRetiro") Date fechaRetiro, @JsonProperty(value = "operador") Operador operador,
-			@JsonProperty(value = "reservas") List<Reserva> reservas,
-			@JsonProperty(value = "servicios") List<Servicio> servicios,
-			@JsonProperty(value = "habitaciones") List<Habitacion> habitaciones) {
+			@JsonProperty(value = "fechaRetiro") String fechaRetiro, @JsonProperty(value = "operador") long operador,
+			@JsonProperty(value = "reservas") List<Long> reservas,
+			@JsonProperty(value = "servicios") List<Long> servicios,
+			@JsonProperty(value = "habitaciones") List<Long> habitaciones) {
 		this.id = id;
 		this.registro = registro;
 		this.capacidad = capacidad;
 		this.tamaño = tamaño;
 		this.ubicacion = ubicacion;
 		this.precio = precio;
-		this.fechaRetiro = fechaRetiro;
+		this.fechaRetiro = fechaRetiro;		
 		this.operador = operador;
 		this.reservas = reservas;
 		this.servicios = servicios;
 		this.habitaciones = habitaciones;
+		
+		try
+		{
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			this.fechaRetiroDate = new Date(format.parse(this.fechaRetiro).getTime());
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}		
 	}
 
 	public long getId() {
@@ -113,50 +132,72 @@ public class Espacio {
 		this.precio = precio;
 	}
 
-	public Date getFechaRetiro() {
+	public String getFechaRetiro() {
 		return fechaRetiro;
 	}
 
-	public void setFechaRetiro(Date fechaCancelacion) {
+	public void setFechaRetiro(String fechaCancelacion) {
 		this.fechaRetiro = fechaCancelacion;
+		try
+		{
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			this.fechaRetiroDate = new Date(format.parse(this.fechaRetiro).getTime());
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
-	public Operador getOperador() {
+	public long getOperador() {
 		return operador;
 	}
 
-	public void setOperador(Operador operador) {
+	public void setOperador(long operador) {
 		this.operador = operador;
 	}
 
-	public List<Reserva> getReservas() {
+	public List<Long> getReservas() {
 		return reservas;
 	}
 
-	public void setReservas(List<Reserva> reservas) {
+	public void setReservas(List<Long> reservas) {
 		this.reservas = reservas;
 	}
 
-	public List<Servicio> getServicios() {
+	public List<Long> getServicios() {
 		return servicios;
 	}
 
-	public void setServicios(List<Servicio> servicios) {
+	public void setServicios(List<Long> servicios) {
 		this.servicios = servicios;
 	}
 
-	public List<Habitacion> getHabitaciones() {
+	public List<Long> getHabitaciones() {
 		return habitaciones;
 	}
 
-	public void setHabitaciones(List<Habitacion> habitaciones) {
+	public void setHabitaciones(List<Long> habitaciones) {
 		this.habitaciones = habitaciones;
 	}
 
-	public int calcularOcupacionEnFecha(java.util.Date date) {
+	public int calcularOcupacionEnFecha(java.util.Date date, Connection conn) throws SQLException, Exception 
+	{
+		DAOReserva daoReserva = new DAOReserva();
+		daoReserva.setConn(conn);
+		
+		List<Long> reservasId = daoReserva.buscarReservasIdEspacio(getId());
+		
+		List<Reserva> reservas = new ArrayList<Reserva>();
+		
+		for(long ido : reservasId)
+		{
+			reservas.add(daoReserva.buscarReserva(ido, getId()));
+		}
+		
 		int ocupacion = 0;
 		for (Reserva r : reservas) {
-			if (r.getFechaInicio().before(date) && (r.getFechaInicio().getMonth() * 30 + r.getFechaInicio().getDay()
+			if (r.getFechaInicioDate().before(date) && (r.getFechaInicioDate().getMonth() * 30 + r.getFechaInicioDate().getDay()
 					+ r.getDuracion() <= date.getMonth() * 30 + date.getDay())) {
 				ocupacion++;
 			}
@@ -164,7 +205,20 @@ public class Espacio {
 		return ocupacion;
 	}
 
-	public void calcularCapacidad() {
+	public void calcularCapacidad(Connection conn) throws SQLException, Exception 
+	{
+		DAOHabitacion daoHabitacion = new DAOHabitacion();
+		daoHabitacion.setConn(conn);
+		
+		List<Long> habitacionesId = daoHabitacion.buscarHabitacionesIdEspacio(getId());
+		
+		List<Habitacion> habitaciones = new ArrayList<Habitacion>();
+		
+		for(long ido : habitacionesId)
+		{
+			habitaciones.add(daoHabitacion.buscarHabitacion(ido));
+		}
+		
 		int capa = 0;
 
 		for (Habitacion h : habitaciones) {
@@ -173,4 +227,13 @@ public class Espacio {
 		this.capacidad = capa;
 	}
 
+	public Date getFechaRetiroDate() 
+	{
+		return fechaRetiroDate;
+	}
+
+	public void setFechaRetiroDate(Date fechaRetiroDate) {
+		this.fechaRetiroDate = fechaRetiroDate;
+		this.fechaRetiro = (this.fechaRetiroDate.getYear() +1900) + "-" + (this.fechaRetiroDate.getMonth() +1) +"-" + this.fechaRetiroDate.getDate();
+	}
 }

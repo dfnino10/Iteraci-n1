@@ -27,12 +27,12 @@ public class Operador {
 	private long documento;
 
 	@JsonProperty(value = "espacios")
-	private List<Espacio> espacios;
+	private List<Long> espacios;
 
 	public Operador(@JsonProperty(value = "id") long id, @JsonProperty(value = "registro") long registro,
 			@JsonProperty(value = "nombre") String nombre,
 			@JsonProperty(value = "categoria") CategoriaOperador categoria,
-			@JsonProperty(value = "espacios") List<Espacio> espacios,
+			@JsonProperty(value = "espacios") List<Long> espacios,
 			@JsonProperty(value = "documento") long documento) {
 		this.id = id;
 		this.nombre = nombre;
@@ -89,11 +89,11 @@ public class Operador {
 		this.registro = registro;
 	}
 
-	public List<Espacio> getEspacios() {
+	public List<Long> getEspacios() {
 		return espacios;
 	}
 
-	public void setEspacios(List<Espacio> espacios) {
+	public void setEspacios(List<Long> espacios) {
 		this.espacios = espacios;
 	}
 }

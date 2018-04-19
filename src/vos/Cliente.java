@@ -1,9 +1,14 @@
 package vos;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.*;
+
+import dao.DAOReserva;
 
 /**
  * @author Nicolás Mateo Hernández Rojas - nm.hernandez10@uniandes.edu.co
@@ -28,7 +33,7 @@ public class Cliente {
 	private String direccion;
 
 	@JsonProperty(value = "reservas")
-	private List<Reserva> reservas;
+	private List<Long> reservas;
 
 	@JsonProperty(value = "vinculo")
 	private Vinculo vinculo;
@@ -36,7 +41,7 @@ public class Cliente {
 	public Cliente(@JsonProperty(value = "id") long id, @JsonProperty(value = "identificacion") long identificacion,
 			@JsonProperty(value = "nombre") String nombre, @JsonProperty(value = "edad") int edad,
 			@JsonProperty(value = "direccion") String direccion, @JsonProperty(value = "vinculo") Vinculo vinculo,
-			@JsonProperty(value = "reservas") List<Reserva> reservas) 
+			@JsonProperty(value = "reservas") List<Long> reservas) 
 	{
 		this.id = id;
 		this.identificacion = identificacion;
@@ -95,22 +100,36 @@ public class Cliente {
 		this.vinculo = vinculo;
 	}
 
-	public List<Reserva> getReservas() {
+	public List<Long> getReservas() {
 		return reservas;
 	}
 
-	public void setReservas(List<Reserva> reservas) {
+	public void setReservas(List<Long> reservas) {
 		this.reservas = reservas;
 	}
-
-	public boolean reservaHoy(Date fecha) {
+	
+	public boolean reservaHoy(Connection conn, Date fecha) throws SQLException, Exception
+	{
+		DAOReserva daoReserva = new DAOReserva();
+		daoReserva.setConn(conn);
+		
+		List<Long> reservasId = daoReserva.buscarReservasIdCliente(getId());
+		
+		List<Reserva> reservas = new ArrayList<Reserva>();
+		
+		for(long id : reservasId)
+		{
+			reservas.add(daoReserva.buscarReserva(getId(), id));
+		}
+		
 		boolean resHoy = false;
 		for (Reserva r : reservas) {
 			if (r.getFechaReserva().equals(fecha))
-				;
-			resHoy = true;
+			{
+				resHoy = true;
+			}
 		}
-
+		
 		return resHoy;
 	}
 }

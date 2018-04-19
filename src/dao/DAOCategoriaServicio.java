@@ -39,17 +39,16 @@ public class DAOCategoriaServicio
 	public ArrayList<CategoriaServicio> darCategoriasServicio() throws SQLException, Exception {
 		ArrayList<CategoriaServicio> categoriasServicio = new ArrayList<CategoriaServicio>();
 
-		String sql = "SELECT * FROM CATEGORIAS_SERVICIO";
+		String sql = "SELECT * FROM CATEGORIASSERVICIO";
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-		System.out.println(rs.next());
-
+		
 		while (rs.next()) {
 			long id = Long.parseLong(rs.getString("ID"));
-			String categoria = rs.getString("CATEGORIA");
-			String descripcion = rs.getString("DESCRIPCIÓN");
+			String categoria = rs.getString("NOMBRE");
+			String descripcion = rs.getString("DESCRIPCION");
 
 			categoriasServicio.add(new CategoriaServicio(id, categoria, descripcion));
 		}
@@ -57,9 +56,9 @@ public class DAOCategoriaServicio
 	}
 
 	public void addCategoriaServicio(CategoriaServicio categoriaServicio) throws SQLException, Exception {
-		String sql = "INSERT INTO CATEGORIAS_SERVICIO VALUES (";
+		String sql = "INSERT INTO CATEGORIASSERVICIO VALUES (";
 		sql += "ID = " + categoriaServicio.getId() + ",";
-		sql += "CATEGORIA= " + categoriaServicio.getCategoria() + ",";
+		sql += "NOMBRE = " + categoriaServicio.getCategoria() + ",";
 		sql += "DESCRIPCION = " + categoriaServicio.getDescripcion() + ")";		
 
 		System.out.println("SQL stmt:" + sql);
@@ -70,9 +69,9 @@ public class DAOCategoriaServicio
 	}
 
 	public void updateCategoriaServicio(CategoriaServicio categoriaServicio) throws SQLException, Exception {
-		String sql = "UPDATE CATEGORIAS_SERVICIO SET ";
+		String sql = "UPDATE CATEGORIASSERVICIO SET ";
 		sql += "ID = " + categoriaServicio.getId() + ",";
-		sql += "CATEGORIA= " + categoriaServicio.getCategoria() + ",";
+		sql += "NOMBRE = " + categoriaServicio.getCategoria() + ",";
 		sql += "DESCRIPCION = " + categoriaServicio.getDescripcion() + ")";		
 
 		System.out.println("SQL stmt:" + sql);
@@ -83,7 +82,7 @@ public class DAOCategoriaServicio
 	}
 
 	public void deleteCategoriaServicio(CategoriaServicio categoriaServicio) throws SQLException, Exception {
-		String sql = "DELETE FROM CATEGORIAS_SERVICIO";
+		String sql = "DELETE FROM CATEGORIASSERVICIO";
 		sql += " WHERE ID = " + categoriaServicio.getId();
 
 		System.out.println("SQL stmt:" + sql);
@@ -94,16 +93,21 @@ public class DAOCategoriaServicio
 	}
 
 	public CategoriaServicio buscarCategoriaServicio(long id) throws SQLException, Exception {
-		String sql = "SELECT * FROM CATEGORIAS_SERVICIO WHERE ID  ='" + id + "'";
+		String sql = "SELECT * FROM CATEGORIASSERVICIO WHERE ID  ='" + id + "'";
 
 		System.out.println("SQL stmt:" + sql);
 
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		recursos.add(prepStmt);
 		ResultSet rs = prepStmt.executeQuery();
-
-		String categoria = rs.getString("CATEGORIA");
-		String descripcion = rs.getString("DESCRIPCIÓN");
+		
+		if(!rs.next())
+		{
+			throw new Exception ("No se encontró ninguna categoría de servicio con el id = "+id);
+		}
+		
+		String categoria = rs.getString("NOMBRE");
+		String descripcion = rs.getString("DESCRIPCION");
 
 		return new CategoriaServicio(id, categoria, descripcion);
 	}

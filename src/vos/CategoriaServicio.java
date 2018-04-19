@@ -7,14 +7,14 @@ public class CategoriaServicio
 	@JsonProperty(value = "id")
 	private long id;
 	
-	@JsonProperty(value = "categoria")
+	@JsonProperty(value = "nombre")
 	private String categoria;
 	
 	@JsonProperty(value = "descripcion")
 	private String descripcion;
 	
 	public CategoriaServicio(@JsonProperty(value = "id") long id, 
-			@JsonProperty(value = "categoria") String categoria,
+			@JsonProperty(value = "nombre") String categoria,
 			@JsonProperty(value = "descripcion") String descripcion)
 	{
 		this.id = id;
