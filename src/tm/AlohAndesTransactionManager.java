@@ -88,11 +88,11 @@ public class AlohAndesTransactionManager
 				System.err.println(e.getMessage());
 				e.printStackTrace();
 				throw e;
-			}
-
+			}		
+			
 			Date fecha = new Date();
-
-			if (fecha.after(reserva.getFechaInicio())) {
+			
+			if (fecha.after(reserva.getFechaInicioDate())) {
 				throw new Exception("La reserva debe iniciar después que la fecha actual");
 			}
 
@@ -104,7 +104,7 @@ public class AlohAndesTransactionManager
 				}
 			}
 
-			if (espacio.getCapacidad() < espacio.calcularOcupacionEnFecha(reserva.getFechaInicio()) + 1) {
+			if (espacio.getCapacidad() < espacio.calcularOcupacionEnFecha(reserva.getFechaInicioDate(), conn) + 1) {
 				throw new Exception("La nueva reserva excediría la capacidad del espacio a reservar");
 			}
 
@@ -115,27 +115,13 @@ public class AlohAndesTransactionManager
 				throw new Exception("Sólo estudiantes, profesores y empleados pueden usar vivienda universitaria");
 			}
 			
-			List<Long> reservasId = daoReserva.buscarReservasIdCliente(cliente.getId());
 			
-			List<Reserva> reservas = new ArrayList<Reserva>();
 			
-			for(long id : reservasId)
-			{
-				reservas.add(daoReserva.buscarReserva(cliente.getId(), id));
-			}
-			
-			boolean resHoy = false;
-			for (Reserva r : reservas) {
-				if (r.getFechaReserva().equals(fecha))
-					;
-				resHoy = true;
-			}
-			
-			if (resHoy) {
-				throw new Exception("No puede hacerse más de una resrva al día");
+			if (cliente.reservaHoy(conn, fecha)) {
+				throw new Exception("No puede hacerse más de una reserva al día");
 			}
 
-			if (espacio.getFechaRetiro() != null && reserva.calcularFechaFin().after(espacio.getFechaRetiro())) {
+			if (espacio.getFechaRetiro() != null && reserva.calcularFechaFin().after(espacio.getFechaRetiroDate())) {
 				throw new Exception(
 						"No se puede reservar con esta duración y fecha de inicio porque el espacio se retira antes de finalizar la reserva");
 			}
@@ -276,10 +262,11 @@ public class AlohAndesTransactionManager
 					throw new Exception(
 							"Hay reservas hechas en el espacio que culminan después de la cancelación propuesta. Asegúrese que no se está comprometido.");
 				}
-			}
-
-			espacio.setFechaRetiro(fechaCancelacion);
-			daoEspacio.deleteEspacio(espacio);
+			}		
+			
+			espacio.setFechaRetiroDate(fechaCancelacion);
+			
+			daoEspacio.updateEspacio(espacio);
 		} catch (SQLException e) {
 			System.err.println("SQLException:" + e.getMessage());
 			e.printStackTrace();

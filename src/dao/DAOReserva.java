@@ -1,10 +1,11 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.Date;
+import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import vos.Cliente;
@@ -48,10 +49,10 @@ public class DAOReserva {
 
 		while (rs.next()) {
 			long idCliente = Long.parseLong(rs.getString("IDCLIENTE"));
-			long idEspacio = Long.parseLong(rs.getString("IDESPACIO"));
-			Date fechaInicio = Date.valueOf(rs.getString("FECHAINICIO"));
+			long idEspacio = Long.parseLong(rs.getString("IDESPACIO"));			
+			String fechaInicio = rs.getString("FECHAINICIO");
 			int duracion = Integer.parseInt(rs.getString("DURACION"));
-			Date fechaReserva = Date.valueOf(rs.getString("FECHARESERVA"));
+			String fechaReserva = rs.getString("FECHARESERVA");
 			double precio = Double.parseDouble(rs.getString("PRECIO"));
 			boolean cancelado = false;
 			if (rs.getString("CANCELADO").equals('Y')) {
@@ -64,19 +65,18 @@ public class DAOReserva {
 
 	public void addReserva(Reserva reserva) throws SQLException, Exception
 	{
-		String sql = "INSERT INTO RESERVAS (idCliente, idEspacio, duracion, fechaInicio, fechaReserva, precio, cancelado) VALUES (";
-		sql += reserva.getIdCliente() + ",";
+		String sql = "INSERT INTO RESERVAS (idEspacio, idCliente, duracion, fechaInicio, fechaReserva, precio, cancelado) VALUES (";
 		sql += reserva.getIdEspacio() + ",";
+		sql += reserva.getIdCliente() + ",";
 		sql += reserva.getDuracion() + ",";
-		sql += "TO_DATE('"+reserva.getFechaInicio().getDay() + "-" + reserva.getFechaInicio().getMonth() +"-" +reserva.getFechaInicio().getYear()   + "','DD-MM-YYYY'),";
-		sql += "TO_DATE('"+reserva.getFechaReserva().getDay() + "-" + reserva.getFechaReserva().getMonth() +"-" +reserva.getFechaReserva().getYear()   + "','DD-MM-YYYY'),";
+		sql += "TO_DATE('"+(reserva.getFechaInicioDate().getDate()) + "-" + (reserva.getFechaInicioDate().getMonth() +1) +"-" + (reserva.getFechaInicioDate().getYear()+1900)  + "','DD-MM-YYYY'),";
+		sql += "TO_DATE('"+(reserva.getFechaReservaDate().getDate()) + "-" + (reserva.getFechaReservaDate().getMonth() +1) +"-" + (reserva.getFechaReservaDate().getYear()+1900)   + "','DD-MM-YYYY'),";
 
 		DAOCliente daoCliente = new DAOCliente();
 		DAOEspacio daoEspacio = new DAOEspacio();
 		daoCliente.setConn(conn);
 		daoEspacio.setConn(conn);
 
-		Cliente cliente = daoCliente.buscarCliente(reserva.getIdCliente());
 		Espacio espacio = daoEspacio.buscarEspacio(reserva.getIdEspacio());
 
 		if (!reserva.isCancelado()) {
@@ -88,13 +88,8 @@ public class DAOReserva {
 			cancelado = 'Y';
 		}
 		sql += reserva.getPrecio() + ",";
-		sql += cancelado + ")";
+		sql +="'"+cancelado + "')";
 		
-
-		cliente.getReservas().add(reserva.getIdEspacio());
-		espacio.getReservas().add(reserva.getIdCliente());
-		daoCliente.updateCliente(cliente);
-		daoEspacio.updateEspacio(espacio);
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -106,9 +101,8 @@ public class DAOReserva {
 	public void updateReserva(Reserva reserva) throws SQLException, Exception {
 		String sql = "UPDATE RESERVAS SET ";
 		sql += "duracion = " + reserva.getDuracion() + ",";
-		sql += "fechaInicio = TO_DATE('"+reserva.getFechaInicio().getDay() + "-" + reserva.getFechaInicio().getMonth() +"-" +reserva.getFechaInicio().getYear()   + "','DD-MM-YYYY'),";
-		sql += "fechaReserva = TO_DATE('"+reserva.getFechaReserva().getDay() + "-" + reserva.getFechaReserva().getMonth() +"-" +reserva.getFechaReserva().getYear()   + "','DD-MM-YYYY'),";
-
+		sql += "fechaInicio = TO_DATE('"+(reserva.getFechaInicioDate().getDate()) + "-" + (reserva.getFechaInicioDate().getMonth() +1) +"-" + (reserva.getFechaInicioDate().getYear()+1900)  + "','DD-MM-YYYY'),";
+		sql += "fechaReserva = TO_DATE('"+(reserva.getFechaReservaDate().getDate()) + "-" + (reserva.getFechaReservaDate().getMonth() +1) +"-" + (reserva.getFechaReservaDate().getYear()+1900)   + "','DD-MM-YYYY'),";
 		DAOCliente daoCliente = new DAOCliente();
 		DAOEspacio daoEspacio = new DAOEspacio();
 		daoCliente.setConn(conn);
@@ -126,8 +120,8 @@ public class DAOReserva {
 			cancelado = 'Y';
 		}
 		sql += "precio = " + reserva.getPrecio() + ",";
-		sql += "cancelado = " + cancelado;
-		sql += " WHERE IDCLIENTE = " + reserva.getIdCliente() + " AND IDESPACIO = " + reserva.getIdEspacio();
+		sql += "cancelado = '" + cancelado;
+		sql += "' WHERE IDCLIENTE = " + reserva.getIdCliente() + " AND IDESPACIO = " + reserva.getIdEspacio();
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -161,9 +155,9 @@ public class DAOReserva {
 			throw new Exception ("No se encontró ninguna reserva con el idCliente = "+idCliente + " y con idEspacio = " + idEspacio);
 		}
 		
-		Date fechaInicio = Date.valueOf(rs.getString("FECHAINICIO"));
+		String fechaInicio = rs.getString("FECHAINICIO");
 		int duracion = Integer.parseInt(rs.getString("DURACION"));
-		Date fechaReserva = Date.valueOf(rs.getString("FECHARESERVA"));
+		String fechaReserva = rs.getString("FECHARESERVA");
 		boolean cancelado = false;
 		double precio = Double.parseDouble(rs.getString("PRECIO"));
 		if (rs.getString("CANCELADO").equals('Y')) {

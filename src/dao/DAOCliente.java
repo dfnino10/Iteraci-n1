@@ -72,8 +72,7 @@ public class DAOCliente {
 		sql += cliente.getIdentificacion() + ",";
 		sql += cliente.getNombre() + ",";		
 		sql += cliente.getEdad() + ",";
-		sql += cliente.getDireccion() + ")";
-		
+		sql += cliente.getDireccion() + ")";		
 
 		System.out.println("SQL stmt:" + sql);
 

@@ -1,5 +1,6 @@
 package vos;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.*;
@@ -18,14 +19,18 @@ public class Reserva {
 	private long idEspacio;
 
 	@JsonProperty(value = "fechaInicio")
-	private Date fechaInicio;
+	private String fechaInicio;
 
+	private Date fechaInicioDate;
+	
 	@JsonProperty(value = "duracion")
 	private int duracion;
 
 	@JsonProperty(value = "fechaReserva")
-	private Date fechaReserva;
+	private String fechaReserva;
 
+	private Date fechaReservaDate;
+	
 	@JsonProperty(value = "cancelado")
 	private boolean cancelado;
 
@@ -33,8 +38,8 @@ public class Reserva {
 	private double precio;
 
 	public Reserva(@JsonProperty(value = "idCliente") long idCliente, @JsonProperty(value = "idEspacio") long idEspacio,
-			@JsonProperty(value = "fechaInicio") Date fechaInicio, @JsonProperty(value = "duracion") int duracion,
-			@JsonProperty(value = "fechaReserva") Date fechaReserva,
+			@JsonProperty(value = "fechaInicio") String fechaInicio, @JsonProperty(value = "duracion") int duracion,
+			@JsonProperty(value = "fechaReserva") String fechaReserva,
 			@JsonProperty(value = "cancelado") boolean cancelado, @JsonProperty(value = "precio") double precio) {
 		this.idCliente = idCliente;
 		this.idEspacio = idEspacio;
@@ -43,6 +48,26 @@ public class Reserva {
 		this.fechaReserva = fechaReserva;
 		this.precio = precio;
 		this.cancelado = cancelado;
+		
+		try
+		{
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			this.fechaInicioDate = new Date(format.parse(this.fechaInicio).getTime());
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		try
+		{
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			this.fechaReservaDate = new Date(format.parse(this.fechaReserva).getTime());
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public double getPrecio() {
@@ -69,12 +94,21 @@ public class Reserva {
 		this.idCliente = idCliente;
 	}
 
-	public Date getFechaReserva() {
+	public String getFechaReserva() {
 		return fechaReserva;
 	}
 
-	public void setFechaReserva(Date fechaReserva) {
+	public void setFechaReserva(String fechaReserva) {
 		this.fechaReserva = fechaReserva;
+		try
+		{
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			this.fechaReservaDate = new Date(format.parse(this.fechaReserva).getTime());
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public long getIdEspacio() {
@@ -85,12 +119,21 @@ public class Reserva {
 		this.idEspacio = idEspacio;
 	}
 
-	public Date getFechaInicio() {
+	public String getFechaInicio() {
 		return fechaInicio;
 	}
 
-	public void setFechaInicio(Date fechaInicio) {
+	public void setFechaInicio(String fechaInicio) {
 		this.fechaInicio = fechaInicio;
+		try
+		{
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			this.fechaInicioDate = new Date(format.parse(this.fechaInicio).getTime());
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public int getDuracion() {
@@ -108,9 +151,9 @@ public class Reserva {
 			meses = duracion / 30;
 		}
 		int dias = duracion - meses * 30;
-		if (fechaInicio.getMonth() + meses > 12) {
-			fechaFin.setYear(fechaInicio.getYear() + 1);
-			fechaFin.setMonth(fechaInicio.getMonth() + meses - 12);
+		if (fechaInicioDate.getMonth() + meses > 12) {
+			fechaFin.setYear(fechaInicioDate.getYear() + 1);
+			fechaFin.setMonth(fechaInicioDate.getMonth() + meses - 12);
 			fechaFin.setDate(dias);
 		}
 
@@ -124,12 +167,30 @@ public class Reserva {
 			meses = diasMas / 30;
 		}
 		int dias = diasMas - meses * 30;
-		if (fechaInicio.getMonth() + meses > 12) {
-			fechaCon.setYear(fechaInicio.getYear() + 1);
-			fechaCon.setMonth(fechaInicio.getMonth() + meses - 12);
+		if (fechaInicioDate.getMonth() + meses > 12) {
+			fechaCon.setYear(fechaInicioDate.getYear() + 1);
+			fechaCon.setMonth(fechaInicioDate.getMonth() + meses - 12);
 			fechaCon.setDate(dias);
 		}
 
 		return fechaCon;
 	}
+
+	public Date getFechaInicioDate() {
+		return fechaInicioDate;
+	}
+
+	public void setFechaInicioDate(Date fechaInicioDate) {
+		this.fechaInicioDate = fechaInicioDate;
+		this.fechaInicio = (this.fechaInicioDate.getYear() +1900) + "-" + (this.fechaInicioDate.getMonth() +1) +"-" + this.fechaInicioDate.getDate();
+	}
+
+	public Date getFechaReservaDate() {
+		return fechaReservaDate;
+	}
+
+	public void setFechaReservaDate(Date fechaReservaDate) {
+		this.fechaReservaDate = fechaReservaDate;
+		this.fechaReserva = (this.fechaReservaDate.getYear() +1900) + "-" + (this.fechaReservaDate.getMonth() +1) +"-" + this.fechaReservaDate.getDate();
+	}	
 }

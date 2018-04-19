@@ -1,9 +1,14 @@
 package vos;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.*;
+
+import dao.DAOReserva;
 
 /**
  * @author Nicolás Mateo Hernández Rojas - nm.hernandez10@uniandes.edu.co
@@ -101,5 +106,30 @@ public class Cliente {
 
 	public void setReservas(List<Long> reservas) {
 		this.reservas = reservas;
+	}
+	
+	public boolean reservaHoy(Connection conn, Date fecha) throws SQLException, Exception
+	{
+		DAOReserva daoReserva = new DAOReserva();
+		daoReserva.setConn(conn);
+		
+		List<Long> reservasId = daoReserva.buscarReservasIdCliente(getId());
+		
+		List<Reserva> reservas = new ArrayList<Reserva>();
+		
+		for(long id : reservasId)
+		{
+			reservas.add(daoReserva.buscarReserva(getId(), id));
+		}
+		
+		boolean resHoy = false;
+		for (Reserva r : reservas) {
+			if (r.getFechaReserva().equals(fecha))
+			{
+				resHoy = true;
+			}
+		}
+		
+		return resHoy;
 	}
 }

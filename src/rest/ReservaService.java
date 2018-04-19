@@ -38,6 +38,8 @@ public class ReservaService {
 
 		try 
 		{
+			System.out.println(reserva.getFechaInicio());
+			System.out.println(reserva.getFechaReserva());
 			tm.addReserva(reserva);
 			return Response.status(200).entity(reserva).build();
 		} catch (Exception e) {

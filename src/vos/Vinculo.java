@@ -7,14 +7,14 @@ public class Vinculo
 	@JsonProperty(value = "id")
 	private long id;
 	
-	@JsonProperty(value = "vinculo")
+	@JsonProperty(value = "nombre")
 	private String vinculo;
 	
 	@JsonProperty(value = "descripcion")
 	private String descripcion;
 	
 	public Vinculo(@JsonProperty(value = "id") long id, 
-			@JsonProperty(value = "vinculo") String vinculo,
+			@JsonProperty(value = "nombre") String vinculo,
 			@JsonProperty(value = "descripcion") String descripcion)
 	{
 		this.id = id;

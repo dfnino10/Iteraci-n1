@@ -1,7 +1,7 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.Date;
+import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -57,7 +57,8 @@ public class DAOEspacio {
 			double tamaño = Double.parseDouble(rs.getString("TAMAÑO"));
 			String ubicacion = rs.getString("UBICACION");
 			double precio = Double.parseDouble(rs.getString("PRECIO"));
-			Date fechaRetiro = Date.valueOf(rs.getString("FECHARETIRO"));
+			String fechaRetiro = rs.getString("FECHARETIRO");
+			
 
 			DAOHabitacion daoHabitacion = new DAOHabitacion();
 			daoHabitacion.setConn(conn);
@@ -93,10 +94,8 @@ public class DAOEspacio {
 		sql += espacio.getRegistro() + ",";
 		sql += espacio.getTamaño() + ",";
 		sql += espacio.getUbicacion() + ",";
-		sql += espacio.getPrecio() + ",";		
-		sql += "TO_DATE('"+espacio.getFechaRetiro().getDay()+"-"+espacio.getFechaRetiro().getMonth()+"-"+espacio.getFechaRetiro().getYear() + "','DD-MM-YYYY'))";
-
-		
+		sql += espacio.getPrecio() + ",";	
+		sql += "TO_DATE('"+(espacio.getFechaRetiroDate().getDate()) + "-" + (espacio.getFechaRetiroDate().getMonth() +1) +"-" + (espacio.getFechaRetiroDate().getYear()+1900)  + "','DD-MM-YYYY'))";
 
 		System.out.println("SQL stmt:" + sql);
 
@@ -113,7 +112,7 @@ public class DAOEspacio {
 		sql += "tamaño = " + espacio.getTamaño() + ",";
 		sql += "direccion = " + espacio.getUbicacion() + ",";
 		sql += "precio = " + espacio.getPrecio() + ",";		
-		sql += "fechaRetiro = TO_DATE('"+espacio.getFechaRetiro().getDay()+"-"+espacio.getFechaRetiro().getMonth()+"-"+espacio.getFechaRetiro().getYear() + "','DD-MM-YYYY') ";
+		sql += "fechaRetiro = TO_DATE('"+(espacio.getFechaRetiroDate().getDate()) + "-" + (espacio.getFechaRetiroDate().getMonth() +1) +"-" + (espacio.getFechaRetiroDate().getYear()+1900)  + "','DD-MM-YYYY'),";
 		sql += "WHERE id =" + espacio.getId();
 
 		System.out.println("SQL stmt:" + sql);
@@ -154,8 +153,7 @@ public class DAOEspacio {
 		double tamaño = Double.parseDouble(rs.getString("TAMAÑO"));
 		String ubicacion = rs.getString("DIRECCION");
 		double precio = Double.parseDouble(rs.getString("PRECIO"));
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Date fechaRetiro = new Date(format.parse(rs.getString("FECHARETIRO")).getTime());
+		String fechaRetiro = rs.getString("FECHARETIRO");
 
 		DAOHabitacion daoHabitacion = new DAOHabitacion();
 		daoHabitacion.setConn(conn);
